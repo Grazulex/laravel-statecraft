@@ -8,7 +8,7 @@ use Tests\Fixtures\Order;
 
 describe('YamlStateMachineLoader', function () {
     it('can load a YAML state machine definition', function () {
-        $loader = new YamlStateMachineLoader(__DIR__ . '/../../Fixtures/yaml');
+        $loader = new YamlStateMachineLoader(__DIR__.'/../../Fixtures/yaml');
         $definition = $loader->load('order_workflow');
 
         expect($definition->getName())->toBe('OrderWorkflow');
@@ -18,7 +18,7 @@ describe('YamlStateMachineLoader', function () {
     });
 
     it('can load all definitions from directory', function () {
-        $loader = new YamlStateMachineLoader(__DIR__ . '/../../Fixtures/yaml');
+        $loader = new YamlStateMachineLoader(__DIR__.'/../../Fixtures/yaml');
         $definitions = $loader->loadAll();
 
         expect($definitions)->toHaveKey('order_workflow');
@@ -28,7 +28,7 @@ describe('YamlStateMachineLoader', function () {
 
 describe('StateMachineManager', function () {
     it('can check if a transition is valid', function () {
-        $loader = new YamlStateMachineLoader(__DIR__ . '/../../Fixtures/yaml');
+        $loader = new YamlStateMachineLoader(__DIR__.'/../../Fixtures/yaml');
         $definition = $loader->load('order_workflow');
         $manager = new StateMachineManager($definition);
 
@@ -40,7 +40,7 @@ describe('StateMachineManager', function () {
     });
 
     it('can execute a transition', function () {
-        $loader = new YamlStateMachineLoader(__DIR__ . '/../../Fixtures/yaml');
+        $loader = new YamlStateMachineLoader(__DIR__.'/../../Fixtures/yaml');
         $definition = $loader->load('order_workflow');
         $manager = new StateMachineManager($definition);
 
@@ -54,7 +54,7 @@ describe('StateMachineManager', function () {
     });
 
     it('can get available transitions', function () {
-        $loader = new YamlStateMachineLoader(__DIR__ . '/../../Fixtures/yaml');
+        $loader = new YamlStateMachineLoader(__DIR__.'/../../Fixtures/yaml');
         $definition = $loader->load('order_workflow');
         $manager = new StateMachineManager($definition);
 
@@ -68,7 +68,7 @@ describe('StateMachineManager', function () {
     });
 
     it('can initialize a model with initial state', function () {
-        $loader = new YamlStateMachineLoader(__DIR__ . '/../../Fixtures/yaml');
+        $loader = new YamlStateMachineLoader(__DIR__.'/../../Fixtures/yaml');
         $definition = $loader->load('order_workflow');
         $manager = new StateMachineManager($definition);
 

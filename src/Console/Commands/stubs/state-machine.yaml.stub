@@ -1,0 +1,8 @@
+state_machine:
+  name: {{ $name }}
+  model: {{ $model }}
+  field: {{ $field }}
+  states: {{ $states }}
+  initial: {{ $initial }}
+  transitions:
+{{ $transitions }}

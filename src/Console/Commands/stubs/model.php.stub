@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ $namespace }};
+
+use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
+use Grazulex\LaravelStatecraft\Traits\HasStateHistory;
+use Illuminate\Database\Eloquent\Model;
+
+class {{ $className }} extends Model
+{
+    use HasStateMachine, HasStateHistory;
+
+    protected $fillable = [
+        'name',
+        '{{ $field }}',
+        // Add other fillable fields
+    ];
+
+    // Available states: {{ $states }}
+    // Available methods will be auto-generated based on your YAML definition
+    
+    /**
+     * Override the state machine definition name if needed.
+     */
+    protected function getStateMachineDefinitionName(): string
+    {
+        return '{{ $stateMachineName }}';
+    }
+}

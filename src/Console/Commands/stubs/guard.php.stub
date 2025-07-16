@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ $namespace }};
+
+use Grazulex\LaravelStatecraft\Contracts\Guard;
+use Illuminate\Database\Eloquent\Model;
+
+class {{ $className }} implements Guard
+{
+    /**
+     * Check if the transition is allowed.
+     */
+    public function check(Model $model, string $from, string $to): bool
+    {
+        // TODO: Implement your guard logic here
+        return true;
+    }
+}

@@ -19,10 +19,16 @@ final class StateTransitioned
 
     public string $to;
 
-    public function __construct(Model $model, string $from, string $to)
+    public ?string $guard;
+
+    public ?string $action;
+
+    public function __construct(Model $model, string $from, string $to, ?string $guard = null, ?string $action = null)
     {
         $this->model = $model;
         $this->from = $from;
         $this->to = $to;
+        $this->guard = $guard;
+        $this->action = $action;
     }
 }

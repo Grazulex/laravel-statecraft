@@ -58,7 +58,9 @@ final class StateMachineManager
         $transition = $this->definition->getTransition($currentState, $to);
 
         // Fire transitioning event
-        Event::dispatch(new StateTransitioning($model, $currentState, $to));
+        if (config('statecraft.events.enabled', true)) {
+            Event::dispatch(new StateTransitioning($model, $currentState, $to, $transition['guard'], $transition['action']));
+        }
 
         // Execute action if defined
         if ($transition['action']) {
@@ -70,8 +72,15 @@ final class StateMachineManager
         $model->setAttribute($this->definition->getField(), $to);
         $model->save();
 
+        // Record state transition history
+        if (method_exists($model, 'recordStateTransition')) {
+            $model->recordStateTransition($currentState, $to, $transition['guard'], $transition['action']);
+        }
+
         // Fire transitioned event
-        Event::dispatch(new StateTransitioned($model, $currentState, $to));
+        if (config('statecraft.events.enabled', true)) {
+            Event::dispatch(new StateTransitioned($model, $currentState, $to, $transition['guard'], $transition['action']));
+        }
     }
 
     /**
@@ -109,6 +118,14 @@ final class StateMachineManager
         if (! $model->getAttribute($this->definition->getField())) {
             $model->setAttribute($this->definition->getField(), $this->definition->getInitial());
         }
+    }
+
+    /**
+     * Get the state machine definition.
+     */
+    public function getDefinition(): StateMachineDefinition
+    {
+        return $this->definition;
     }
 
     /**

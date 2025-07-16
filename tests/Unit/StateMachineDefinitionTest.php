@@ -61,7 +61,7 @@ describe('StateMachineDefinition', function () {
         $transitions = $definition->getTransitionsFrom('pending');
 
         expect($transitions)->toHaveCount(2);
-        
+
         $transitionTos = array_column($transitions, 'to');
         expect($transitionTos)->toContain('published');
         expect($transitionTos)->toContain('draft');

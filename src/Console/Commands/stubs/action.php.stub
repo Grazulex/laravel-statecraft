@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ $namespace }};
+
+use Grazulex\LaravelStatecraft\Contracts\Action;
+use Illuminate\Database\Eloquent\Model;
+
+class {{ $className }} implements Action
+{
+    /**
+     * Execute the action during a state transition.
+     */
+    public function execute(Model $model, string $from, string $to): void
+    {
+        // TODO: Implement your action logic here
+    }
+}

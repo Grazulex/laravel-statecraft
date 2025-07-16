@@ -22,7 +22,7 @@ final class YamlStateMachineLoader
     {
         $filepath = $this->getFilePath($filename);
 
-        if (!File::exists($filepath)) {
+        if (! File::exists($filepath)) {
             throw new InvalidStateMachineDefinitionException("State machine file not found: {$filepath}");
         }
 
@@ -34,12 +34,12 @@ final class YamlStateMachineLoader
 
     public function loadAll(): array
     {
-        if (!File::isDirectory($this->basePath)) {
+        if (! File::isDirectory($this->basePath)) {
             return [];
         }
 
         $definitions = [];
-        $files = File::glob($this->basePath . '/*.yaml');
+        $files = File::glob($this->basePath.'/*.yaml');
 
         foreach ($files as $file) {
             $filename = basename($file, '.yaml');
@@ -67,7 +67,7 @@ final class YamlStateMachineLoader
 
     private function validateStructure(array $data, string $filename): void
     {
-        if (!isset($data['state_machine'])) {
+        if (! isset($data['state_machine'])) {
             throw new InvalidStateMachineDefinitionException("Missing 'state_machine' root key in {$filename}");
         }
 
@@ -75,16 +75,16 @@ final class YamlStateMachineLoader
         $required = ['name', 'model', 'states', 'initial'];
 
         foreach ($required as $key) {
-            if (!isset($stateMachine[$key])) {
+            if (! isset($stateMachine[$key])) {
                 throw new InvalidStateMachineDefinitionException("Missing required key '{$key}' in {$filename}");
             }
         }
 
-        if (!is_array($stateMachine['states'])) {
+        if (! is_array($stateMachine['states'])) {
             throw new InvalidStateMachineDefinitionException("'states' must be an array in {$filename}");
         }
 
-        if (!in_array($stateMachine['initial'], $stateMachine['states'])) {
+        if (! in_array($stateMachine['initial'], $stateMachine['states'])) {
             throw new InvalidStateMachineDefinitionException("Initial state '{$stateMachine['initial']}' not found in states list in {$filename}");
         }
     }
@@ -92,9 +92,9 @@ final class YamlStateMachineLoader
     private function getFilePath(string $filename): string
     {
         if (str_ends_with($filename, '.yaml')) {
-            return $this->basePath . '/' . $filename;
+            return $this->basePath.'/'.$filename;
         }
 
-        return $this->basePath . '/' . $filename . '.yaml';
+        return $this->basePath.'/'.$filename.'.yaml';
     }
 }

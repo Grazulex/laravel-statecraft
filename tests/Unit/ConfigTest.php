@@ -16,7 +16,7 @@ it('config path is accessible', function () {
 
 it('config has expected structure', function () {
     $config = include __DIR__.'/../../src/Config/statecraft.php';
-    
+
     expect($config)
         ->toBeArray()
         ->toHaveKey('state_machines_path')
