@@ -40,7 +40,21 @@ trait HasStateHistory
                 'guard' => $guard,
                 'action' => $action,
                 'metadata' => $metadata,
+                'state_machine' => $this->getStateMachineName(),
+                'transition' => $action, // Use action as transition name for now
             ]);
         }
+    }
+
+    /**
+     * Get the state machine name for history tracking.
+     */
+    private function getStateMachineName(): string
+    {
+        if (method_exists($this, 'getStateMachineDefinitionName')) {
+            return $this->getStateMachineDefinitionName();
+        }
+
+        return class_basename(static::class).'Workflow';
     }
 }

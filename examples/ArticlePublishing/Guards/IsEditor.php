@@ -15,23 +15,23 @@ class IsEditor implements Guard
     public function check(Model $model, string $from, string $to): bool
     {
         $user = auth()->user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return false;
         }
-        
+
         // Check if user has editor role
         // This assumes you're using a role-based system
         // Adjust according to your authorization system
         if (method_exists($user, 'hasRole')) {
             return $user->hasRole('editor');
         }
-        
+
         // Alternative: check for specific permission
         if (method_exists($user, 'can')) {
             return $user->can('edit_articles');
         }
-        
+
         // Fallback: check for is_editor attribute
         return $user->is_editor ?? false;
     }

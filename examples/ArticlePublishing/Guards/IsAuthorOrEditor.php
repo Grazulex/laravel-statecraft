@@ -15,26 +15,26 @@ class IsAuthorOrEditor implements Guard
     public function check(Model $model, string $from, string $to): bool
     {
         $user = auth()->user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return false;
         }
-        
+
         // Check if user is the author
         if ($user->id === $model->author_id) {
             return true;
         }
-        
+
         // Check if user has editor permissions
         if (method_exists($user, 'hasRole')) {
             return $user->hasRole('editor');
         }
-        
+
         // Alternative: check for specific permission
         if (method_exists($user, 'can')) {
             return $user->can('edit_articles');
         }
-        
+
         // Fallback: check for is_editor attribute
         return $user->is_editor ?? false;
     }

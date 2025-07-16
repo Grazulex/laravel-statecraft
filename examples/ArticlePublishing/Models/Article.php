@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Examples\ArticlePublishing\Models;
 
-use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
 use Grazulex\LaravelStatecraft\Traits\HasStateHistory;
+use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Str;
 
 class Article extends Model
 {
-    use HasFactory, HasStateMachine, HasStateHistory;
-    
+    use HasFactory, HasStateHistory, HasStateMachine;
+
     protected $fillable = [
         'title',
         'slug',
@@ -25,19 +26,11 @@ class Article extends Model
         'meta_title',
         'meta_description',
     ];
-    
+
     protected $casts = [
         'published_at' => 'datetime',
     ];
-    
-    /**
-     * Get the state machine definition name.
-     */
-    protected function getStateMachineDefinitionName(): string
-    {
-        return 'simple-article-workflow';
-    }
-    
+
     /**
      * Get the author of the article.
      */
@@ -45,7 +38,7 @@ class Article extends Model
     {
         return $this->belongsTo(User::class, 'author_id');
     }
-    
+
     /**
      * Check if the article is published.
      */
@@ -53,7 +46,7 @@ class Article extends Model
     {
         return $this->getCurrentState() === 'published';
     }
-    
+
     /**
      * Check if the article is in review.
      */
@@ -61,7 +54,7 @@ class Article extends Model
     {
         return $this->getCurrentState() === 'review';
     }
-    
+
     /**
      * Check if the article is rejected.
      */
@@ -69,7 +62,7 @@ class Article extends Model
     {
         return $this->getCurrentState() === 'rejected';
     }
-    
+
     /**
      * Check if the article is a draft.
      */
@@ -77,7 +70,7 @@ class Article extends Model
     {
         return $this->getCurrentState() === 'draft';
     }
-    
+
     /**
      * Scope to get only published articles.
      */
@@ -85,7 +78,7 @@ class Article extends Model
     {
         return $query->where('status', 'published');
     }
-    
+
     /**
      * Scope to get articles by author.
      */
@@ -93,7 +86,7 @@ class Article extends Model
     {
         return $query->where('author_id', $authorId);
     }
-    
+
     /**
      * Scope to get articles in review.
      */
@@ -101,7 +94,7 @@ class Article extends Model
     {
         return $query->where('status', 'review');
     }
-    
+
     /**
      * Get the URL for the article.
      */
@@ -110,10 +103,10 @@ class Article extends Model
         if ($this->isPublished()) {
             return route('articles.show', $this->slug);
         }
-        
+
         return route('articles.preview', $this->slug);
     }
-    
+
     /**
      * Get the route key name for URL binding.
      */
@@ -121,7 +114,7 @@ class Article extends Model
     {
         return 'slug';
     }
-    
+
     /**
      * Boot the model.
      */
@@ -130,15 +123,23 @@ class Article extends Model
         static::creating(function ($article) {
             // Auto-generate slug if not provided
             if (empty($article->slug)) {
-                $article->slug = \Str::slug($article->title);
+                $article->slug = Str::slug($article->title);
             }
         });
-        
+
         static::updating(function ($article) {
             // Update slug if title changed
             if ($article->isDirty('title') && empty($article->slug)) {
-                $article->slug = \Str::slug($article->title);
+                $article->slug = Str::slug($article->title);
             }
         });
+    }
+
+    /**
+     * Get the state machine definition name.
+     */
+    protected function getStateMachineDefinitionName(): string
+    {
+        return 'simple-article-workflow';
     }
 }

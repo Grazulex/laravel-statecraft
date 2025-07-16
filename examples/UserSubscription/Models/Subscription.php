@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Examples\UserSubscription\Models;
 
-use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
 use Grazulex\LaravelStatecraft\Traits\HasStateHistory;
+use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Subscription extends Model
 {
-    use HasFactory, HasStateMachine, HasStateHistory;
-    
+    use HasFactory, HasStateHistory, HasStateMachine;
+
     protected $fillable = [
         'user_id',
         'plan_id',
@@ -29,7 +29,7 @@ class Subscription extends Model
         'reactivation_attempts',
         'metadata',
     ];
-    
+
     protected $casts = [
         'amount' => 'decimal:2',
         'trial_ends_at' => 'datetime',
@@ -40,15 +40,7 @@ class Subscription extends Model
         'reactivation_attempts' => 'integer',
         'metadata' => 'array',
     ];
-    
-    /**
-     * Get the state machine definition name.
-     */
-    protected function getStateMachineDefinitionName(): string
-    {
-        return 'subscription-workflow';
-    }
-    
+
     /**
      * Get the user who owns the subscription.
      */
@@ -56,7 +48,7 @@ class Subscription extends Model
     {
         return $this->belongsTo(User::class);
     }
-    
+
     /**
      * Get the plan for this subscription.
      */
@@ -64,7 +56,7 @@ class Subscription extends Model
     {
         return $this->belongsTo(Plan::class);
     }
-    
+
     /**
      * Check if the subscription is active.
      */
@@ -72,7 +64,7 @@ class Subscription extends Model
     {
         return $this->getCurrentState() === 'active';
     }
-    
+
     /**
      * Check if the subscription is on trial.
      */
@@ -80,7 +72,7 @@ class Subscription extends Model
     {
         return $this->getCurrentState() === 'trial';
     }
-    
+
     /**
      * Check if the subscription is suspended.
      */
@@ -88,7 +80,7 @@ class Subscription extends Model
     {
         return $this->getCurrentState() === 'suspended';
     }
-    
+
     /**
      * Check if the subscription is cancelled.
      */
@@ -96,7 +88,7 @@ class Subscription extends Model
     {
         return $this->getCurrentState() === 'cancelled';
     }
-    
+
     /**
      * Check if the trial has expired.
      */
@@ -104,7 +96,7 @@ class Subscription extends Model
     {
         return $this->trial_ends_at && $this->trial_ends_at->isPast();
     }
-    
+
     /**
      * Check if the current period has ended.
      */
@@ -112,31 +104,31 @@ class Subscription extends Model
     {
         return $this->current_period_end && $this->current_period_end->isPast();
     }
-    
+
     /**
      * Get the days remaining in the current period.
      */
     public function daysRemainingInPeriod(): int
     {
-        if (!$this->current_period_end) {
+        if (! $this->current_period_end) {
             return 0;
         }
-        
+
         return max(0, now()->diffInDays($this->current_period_end));
     }
-    
+
     /**
      * Get the days remaining in trial.
      */
     public function daysRemainingInTrial(): int
     {
-        if (!$this->trial_ends_at) {
+        if (! $this->trial_ends_at) {
             return 0;
         }
-        
+
         return max(0, now()->diffInDays($this->trial_ends_at));
     }
-    
+
     /**
      * Scope to get active subscriptions.
      */
@@ -144,7 +136,7 @@ class Subscription extends Model
     {
         return $query->where('status', 'active');
     }
-    
+
     /**
      * Scope to get trial subscriptions.
      */
@@ -152,7 +144,7 @@ class Subscription extends Model
     {
         return $query->where('status', 'trial');
     }
-    
+
     /**
      * Scope to get suspended subscriptions.
      */
@@ -160,7 +152,7 @@ class Subscription extends Model
     {
         return $query->where('status', 'suspended');
     }
-    
+
     /**
      * Scope to get cancelled subscriptions.
      */
@@ -168,7 +160,7 @@ class Subscription extends Model
     {
         return $query->where('status', 'cancelled');
     }
-    
+
     /**
      * Scope to get expired trials.
      */
@@ -177,7 +169,7 @@ class Subscription extends Model
         return $query->where('status', 'trial')
             ->where('trial_ends_at', '<', now());
     }
-    
+
     /**
      * Scope to get subscriptions ending soon.
      */
@@ -186,7 +178,7 @@ class Subscription extends Model
         return $query->where('status', 'active')
             ->where('current_period_end', '<=', now()->addDays($days));
     }
-    
+
     /**
      * Get the subscription's revenue.
      */
@@ -196,10 +188,10 @@ class Subscription extends Model
         $payments = $this->stateHistory()
             ->where('to_state', 'active')
             ->count();
-        
+
         return $this->amount * $payments;
     }
-    
+
     /**
      * Get the subscription's lifetime in days.
      */
@@ -207,10 +199,10 @@ class Subscription extends Model
     {
         $start = $this->created_at;
         $end = $this->cancelled_at ?? now();
-        
+
         return $start->diffInDays($end);
     }
-    
+
     /**
      * Check if the subscription can be reactivated.
      */
@@ -218,19 +210,19 @@ class Subscription extends Model
     {
         return $this->isSuspended() && $this->reactivation_attempts < 3;
     }
-    
+
     /**
      * Get the next billing date.
      */
     public function getNextBillingDateAttribute(): ?string
     {
-        if (!$this->isActive() || !$this->current_period_end) {
+        if (! $this->isActive() || ! $this->current_period_end) {
             return null;
         }
-        
+
         return $this->current_period_end->addMonth()->toDateString();
     }
-    
+
     /**
      * Boot the model.
      */
@@ -238,14 +230,22 @@ class Subscription extends Model
     {
         static::creating(function ($subscription) {
             // Set default currency if not provided
-            if (!$subscription->currency) {
+            if (! $subscription->currency) {
                 $subscription->currency = 'USD';
             }
-            
+
             // Set trial end date if not provided
-            if (!$subscription->trial_ends_at && $subscription->status === 'trial') {
+            if (! $subscription->trial_ends_at && $subscription->status === 'trial') {
                 $subscription->trial_ends_at = now()->addDays(14);
             }
         });
+    }
+
+    /**
+     * Get the state machine definition name.
+     */
+    protected function getStateMachineDefinitionName(): string
+    {
+        return 'subscription-workflow';
     }
 }

@@ -16,6 +16,9 @@ abstract class TestCase extends Orchestra
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Execute migration
+        $this->artisan('migrate', ['--database' => 'testing']);
     }
 
     protected function tearDown(): void

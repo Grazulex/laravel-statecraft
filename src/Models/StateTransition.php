@@ -15,6 +15,8 @@ class StateTransition extends Model
         'guard',
         'action',
         'metadata',
+        'state_machine',
+        'transition',
     ];
 
     protected $casts = [
@@ -27,6 +29,30 @@ class StateTransition extends Model
     public function model(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Get the "from" state (alias for from_state).
+     */
+    public function getFromAttribute(): ?string
+    {
+        return $this->from_state;
+    }
+
+    /**
+     * Get the "to" state (alias for to_state).
+     */
+    public function getToAttribute(): string
+    {
+        return $this->to_state;
+    }
+
+    /**
+     * Get custom data (alias for metadata).
+     */
+    public function getCustomDataAttribute(): ?array
+    {
+        return $this->metadata;
     }
 
     /**

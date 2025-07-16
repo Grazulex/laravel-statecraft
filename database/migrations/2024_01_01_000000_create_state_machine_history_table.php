@@ -13,6 +13,8 @@ return new class extends Migration
         Schema::create('state_machine_history', function (Blueprint $table) {
             $table->id();
             $table->morphs('model');
+            $table->string('state_machine');
+            $table->string('transition')->nullable();
             $table->string('from_state')->nullable();
             $table->string('to_state');
             $table->string('guard')->nullable();
