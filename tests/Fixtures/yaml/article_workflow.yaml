@@ -1,0 +1,19 @@
+state_machine:
+  name: ArticleWorkflow
+  model: Tests\Fixtures\Article
+  states: [draft, review, published, archived]
+  initial: draft
+  field: status
+  transitions:
+    - from: draft
+      to: review
+      guard: Tests\Fixtures\Guards\HasContentGuard
+    - from: review
+      to: published
+      guard: Tests\Fixtures\Guards\IsEditorGuard
+      action: Tests\Fixtures\Actions\PublishAction
+    - from: review
+      to: draft
+    - from: published
+      to: archived
+      action: Tests\Fixtures\Actions\ArchiveAction

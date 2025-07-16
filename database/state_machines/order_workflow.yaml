@@ -1,0 +1,12 @@
+state_machine:
+  name: OrderWorkflow
+  model: Tests\Fixtures\Order
+  states: [draft, pending, approved, rejected]
+  initial: draft
+  transitions:
+    - from: draft
+      to: pending
+    - from: pending
+      to: approved
+    - from: pending
+      to: rejected

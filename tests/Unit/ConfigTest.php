@@ -14,10 +14,13 @@ it('config path is accessible', function () {
         ->toBeTrue();
 });
 
-it('config returns empty array by default', function () {
+it('config has expected structure', function () {
     $config = include __DIR__.'/../../src/Config/statecraft.php';
-
+    
     expect($config)
         ->toBeArray()
-        ->toBeEmpty();
+        ->toHaveKey('state_machines_path')
+        ->toHaveKey('default_state_field')
+        ->toHaveKey('events')
+        ->toHaveKey('history');
 });
