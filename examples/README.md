@@ -39,16 +39,14 @@ An example focusing on:
 
 **States**: `trial → active → suspended → cancelled`
 
-### 4. Document Approval (Multi-Step Example)
-**Location**: [`examples/DocumentApproval/`](DocumentApproval/)
+### 4. More Examples Coming Soon
 
-A detailed example showing:
-- **Multi-step approval process**
-- **Role-based guards**
-- **History tracking usage**
+Additional examples are planned to demonstrate:
+- **Document approval workflows**
+- **Multi-step approval processes**
+- **Role-based permission systems**
 - **Advanced metadata handling**
-
-**States**: `draft → submitted → reviewed → approved/rejected → published`
+- **Integration with external services**
 
 ## Quick Start
 
@@ -100,15 +98,15 @@ if ($order->canSubmit()) {
 
 ## Example Features Comparison
 
-| Feature | OrderWorkflow | ArticlePublishing | UserSubscription | DocumentApproval |
-|---------|---------------|-------------------|------------------|------------------|
-| **States** | 8 states | 4 states | 4 states | 5 states |
-| **Guards** | 3 guards | 2 guards | 2 guards | 4 guards |
-| **Actions** | 3 actions | 2 actions | 3 actions | 3 actions |
-| **History** | ✅ | ✅ | ✅ | ✅ |
-| **Events** | ✅ | ✅ | ✅ | ✅ |
-| **Complexity** | Advanced | Simple | Medium | Advanced |
-| **Use Case** | E-commerce | CMS | SaaS | Enterprise |
+| Feature | OrderWorkflow | ArticlePublishing | UserSubscription |
+|---------|---------------|-------------------|------------------|
+| **States** | 8 states | 4 states | 4 states |
+| **Guards** | 3 guards | 2 guards | 1 guard |
+| **Actions** | 3 actions | 2 actions | 3 actions |
+| **History** | ✅ | ✅ | ✅ |
+| **Events** | ✅ | ✅ | ✅ |
+| **Complexity** | Advanced | Simple | Medium |
+| **Use Case** | E-commerce | CMS | SaaS |
 
 ## Learning Path
 
@@ -117,20 +115,20 @@ if ($order->canSubmit()) {
 - Basic guards and actions
 - Easy to understand and modify
 
-### Intermediate: Order Workflow
+### Intermediate: User Subscription
+- Event-driven state changes
+- Payment integration patterns
+- Complex business rules
+
+### Advanced: Order Workflow
 - Complex multi-state workflow
 - Advanced guards with business logic
 - Real-world e-commerce scenario
 
-### Advanced: Document Approval
-- Multi-step approval process
-- Role-based permissions
-- Advanced metadata usage
-
-### Expert: User Subscription
-- Event-driven state changes
-- Payment integration patterns
-- Complex business rules
+### Expert: Custom Examples
+- Build your own examples
+- Integrate with external services
+- Complex business requirements
 
 ## Example Structure
 
