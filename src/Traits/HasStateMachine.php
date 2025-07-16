@@ -69,7 +69,7 @@ trait HasStateMachine
      */
     protected static function bootHasStateMachine(): void
     {
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             if ($model->getAttribute($model->getStateMachineManager()->getDefinition()->getField()) === null) {
                 $model->initializeState();
             }

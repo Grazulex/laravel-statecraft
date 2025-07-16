@@ -48,7 +48,7 @@ class GenerateCommand extends Command
         $this->info("Files generated successfully in {$outputDir}");
     }
 
-    private function generateGuards($definition, string $outputDir): void
+    private function generateGuards(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition, string $outputDir): void
     {
         $guards = collect($definition->getTransitions())
             ->map(function ($transition) {
@@ -76,7 +76,7 @@ class GenerateCommand extends Command
         }
     }
 
-    private function generateActions($definition, string $outputDir): void
+    private function generateActions(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition, string $outputDir): void
     {
         $actions = collect($definition->getTransitions())
             ->map(function ($transition) {
@@ -104,7 +104,7 @@ class GenerateCommand extends Command
         }
     }
 
-    private function generateModelExample($definition, string $outputDir): void
+    private function generateModelExample(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition, string $outputDir): void
     {
         $modelName = class_basename($definition->getModel());
         $namespace = Str::beforeLast($definition->getModel(), '\\');

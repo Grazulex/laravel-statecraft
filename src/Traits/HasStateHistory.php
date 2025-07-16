@@ -19,13 +19,12 @@ trait HasStateHistory
 
     /**
      * Get the latest state transition.
-     *
-     * @return StateTransition|null
      */
     public function latestStateTransition(): ?StateTransition
     {
         /** @var StateTransition|null $result */
         $result = $this->stateHistory()->latest()->first();
+
         return $result;
     }
 

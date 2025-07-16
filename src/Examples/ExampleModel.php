@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Grazulex\LaravelStatecraft\Examples;
 
-use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
 use Grazulex\LaravelStatecraft\Traits\HasStateHistory;
+use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ExampleModel extends Model
 {
-    use HasStateMachine, HasStateHistory;
+    use HasStateHistory, HasStateMachine;
 
     protected $fillable = ['name', 'state'];
 

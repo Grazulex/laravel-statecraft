@@ -14,7 +14,7 @@ class StateMachineTester
     /**
      * Assert that a transition is allowed.
      *
-     * @param Model $model Model that uses HasStateMachine trait
+     * @param  Model  $model  Model that uses HasStateMachine trait
      */
     public static function assertTransitionAllowed(Model $model, string $toState, string $message = ''): void
     {
@@ -27,14 +27,14 @@ class StateMachineTester
 
         Assert::assertTrue(
             $canTransition,
-            $message ?: "Transition from '{$manager->getCurrentState($model)}' to '{$toState}' should be allowed"
+            $message !== '' && $message !== '0' ? $message : "Transition from '{$manager->getCurrentState($model)}' to '{$toState}' should be allowed"
         );
     }
 
     /**
      * Assert that a transition is blocked.
      *
-     * @param Model $model Model that uses HasStateMachine trait
+     * @param  Model  $model  Model that uses HasStateMachine trait
      */
     public static function assertTransitionBlocked(Model $model, string $toState, string $message = ''): void
     {
@@ -47,14 +47,14 @@ class StateMachineTester
 
         Assert::assertFalse(
             $canTransition,
-            $message ?: "Transition from '{$manager->getCurrentState($model)}' to '{$toState}' should be blocked"
+            $message !== '' && $message !== '0' ? $message : "Transition from '{$manager->getCurrentState($model)}' to '{$toState}' should be blocked"
         );
     }
 
     /**
      * Assert that a model is in a specific state.
      *
-     * @param Model $model Model that uses HasStateMachine trait
+     * @param  Model  $model  Model that uses HasStateMachine trait
      */
     public static function assertInState(Model $model, string $expectedState, string $message = ''): void
     {
@@ -68,15 +68,15 @@ class StateMachineTester
         Assert::assertEquals(
             $expectedState,
             $currentState,
-            $message ?: "Model should be in state '{$expectedState}' but is in '{$currentState}'"
+            $message !== '' && $message !== '0' ? $message : "Model should be in state '{$expectedState}' but is in '{$currentState}'"
         );
     }
 
     /**
      * Assert that a model has specific available transitions.
      *
-     * @param Model $model Model that uses HasStateMachine trait
-     * @param array<string> $expectedTransitions
+     * @param  Model  $model  Model that uses HasStateMachine trait
+     * @param  array<string>  $expectedTransitions
      */
     public static function assertHasAvailableTransitions(Model $model, array $expectedTransitions, string $message = ''): void
     {
@@ -94,7 +94,7 @@ class StateMachineTester
         Assert::assertEquals(
             $expectedTransitions,
             $availableStates,
-            $message ?: 'Available transitions should be ['.implode(', ', $expectedTransitions).'] but found ['.implode(', ', $availableStates).']'
+            $message !== '' && $message !== '0' ? $message : 'Available transitions should be ['.implode(', ', $expectedTransitions).'] but found ['.implode(', ', $availableStates).']'
         );
     }
 
@@ -111,7 +111,7 @@ class StateMachineTester
 
         Assert::assertTrue(
             $model->$canMethod(),
-            $message ?: "Model should be able to execute '{$method}' method"
+            $message !== '' && $message !== '0' ? $message : "Model should be able to execute '{$method}' method"
         );
     }
 
@@ -128,19 +128,20 @@ class StateMachineTester
 
         Assert::assertFalse(
             $model->$canMethod(),
-            $message ?: "Model should not be able to execute '{$method}' method"
+            $message !== '' && $message !== '0' ? $message : "Model should not be able to execute '{$method}' method"
         );
     }
 
     /**
      * Get the state machine manager from a model with the trait.
      *
-     * @param Model $model Model that uses HasStateMachine trait
+     * @param  Model  $model  Model that uses HasStateMachine trait
      */
     private static function getStateMachineManager(Model $model): StateMachineManager
     {
         /** @var callable $getManager */
         $getManager = [$model, 'getStateMachineManager'];
+
         return call_user_func($getManager);
     }
 }

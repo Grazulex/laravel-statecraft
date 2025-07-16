@@ -49,7 +49,7 @@ class GenerateFromYamlCommand extends Command
         $this->info("Files generated successfully in {$outputDir}");
     }
 
-    private function generateGuards($definition, string $outputDir): void
+    private function generateGuards(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition, string $outputDir): void
     {
         $guards = collect($definition->getTransitions())
             ->pluck('guard')
@@ -72,7 +72,7 @@ class GenerateFromYamlCommand extends Command
         }
     }
 
-    private function generateActions($definition, string $outputDir): void
+    private function generateActions(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition, string $outputDir): void
     {
         $actions = collect($definition->getTransitions())
             ->pluck('action')
@@ -95,7 +95,7 @@ class GenerateFromYamlCommand extends Command
         }
     }
 
-    private function generateTraitExample($definition, string $outputDir): void
+    private function generateTraitExample(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition, string $outputDir): void
     {
         $modelName = class_basename($definition->getModel());
         $content = $this->generateTraitUsageExample($modelName, $definition);
