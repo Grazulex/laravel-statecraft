@@ -7,7 +7,6 @@ namespace Tests;
 use Grazulex\LaravelStatecraft\LaravelStatecraftServiceProvider;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Orchestra\Canvas\Core\Presets\Laravel;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra

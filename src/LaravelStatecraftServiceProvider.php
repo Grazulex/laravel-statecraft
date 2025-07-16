@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Grazulex\LaravelStatecraft;
 
 use Illuminate\Support\ServiceProvider;
-use Throwable;
 
 final class LaravelStatecraftServiceProvider extends ServiceProvider
 {
@@ -26,5 +25,4 @@ final class LaravelStatecraftServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/Config/statecraft.php', 'statecraft');
     }
-
 }

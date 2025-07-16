@@ -1,6 +1,6 @@
 parameters:
     ignoreErrors:
-        - '#Strict comparison using === between 1 and 1 will always evaluate to true#'
+        #
     level: 5
     paths:
         - src

@@ -39,7 +39,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Grazulex\\LaravelFlowpipe\\": "src/"
+            "Grazulex\\LaravelStatecraft\\": "src/"
         }
     },
     "autoload-dev": {
