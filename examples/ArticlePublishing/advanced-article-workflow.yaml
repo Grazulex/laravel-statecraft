@@ -1,0 +1,34 @@
+state_machine:
+  name: advanced-article-workflow
+  model: App\Models\Article
+  field: status
+  states: [draft, review, published, rejected, archived]
+  initial: draft
+  transitions:
+    - from: draft
+      to: review
+      guard: Examples\ArticlePublishing\Guards\IsAuthorOrEditor
+      action: Examples\ArticlePublishing\Actions\NotifyEditor
+    
+    - from: review
+      to: published
+      guard: Examples\ArticlePublishing\Guards\IsEditor
+      action: Examples\ArticlePublishing\Actions\NotifyAuthor
+    
+    - from: review
+      to: rejected
+      guard: Examples\ArticlePublishing\Guards\IsEditor
+      action: Examples\ArticlePublishing\Actions\NotifyAuthor
+    
+    - from: rejected
+      to: review
+      guard: Examples\ArticlePublishing\Guards\IsAuthorOrEditor
+      action: Examples\ArticlePublishing\Actions\NotifyEditor
+    
+    - from: published
+      to: archived
+      guard: Examples\ArticlePublishing\Guards\IsEditor
+    
+    - from: archived
+      to: published
+      guard: Examples\ArticlePublishing\Guards\IsEditor

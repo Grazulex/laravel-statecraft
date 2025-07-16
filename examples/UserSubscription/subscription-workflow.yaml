@@ -1,0 +1,38 @@
+state_machine:
+  name: subscription-workflow
+  model: App\Models\Subscription
+  field: status
+  states: [trial, active, suspended, cancelled]
+  initial: trial
+  transitions:
+    # Trial to Active (user provides payment)
+    - from: trial
+      to: active
+      guard: Examples\UserSubscription\Guards\HasValidPayment
+      action: Examples\UserSubscription\Actions\ProcessPayment
+    
+    # Trial to Cancelled (trial expires without payment)
+    - from: trial
+      to: cancelled
+      action: Examples\UserSubscription\Actions\CleanupSubscription
+    
+    # Active to Suspended (payment failure)
+    - from: active
+      to: suspended
+      action: Examples\UserSubscription\Actions\NotifyPaymentFailure
+    
+    # Suspended to Active (payment recovered)
+    - from: suspended
+      to: active
+      guard: Examples\UserSubscription\Guards\HasValidPayment
+      action: Examples\UserSubscription\Actions\ProcessPayment
+    
+    # Suspended to Cancelled (failed to recover payment)
+    - from: suspended
+      to: cancelled
+      action: Examples\UserSubscription\Actions\CleanupSubscription
+    
+    # Active to Cancelled (user cancels)
+    - from: active
+      to: cancelled
+      action: Examples\UserSubscription\Actions\CleanupSubscription
