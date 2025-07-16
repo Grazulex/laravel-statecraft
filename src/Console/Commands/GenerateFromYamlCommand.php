@@ -147,7 +147,7 @@ class {$className} implements Action
 ";
     }
 
-    private function generateTraitUsageExample(string $modelName, $definition): string
+    private function generateTraitUsageExample(string $modelName, \Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition): string
     {
         $namespace = Str::beforeLast($definition->getModel(), '\\');
         $states = implode("', '", $definition->getStates());

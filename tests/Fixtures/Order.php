@@ -38,4 +38,12 @@ class Order extends Model
         // Mock save - just return true for testing
         return true;
     }
+
+    /**
+     * Get the state machine definition name.
+     */
+    protected function getStateMachineDefinitionName(): string
+    {
+        return 'OrderWorkflow';
+    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Examples\UserSubscription\Actions;
 
+use Exception;
 use Grazulex\LaravelStatecraft\Contracts\Action;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
@@ -24,54 +25,54 @@ class ProcessPayment implements Action
             'from_state' => $from,
             'to_state' => $to,
         ]);
-        
+
         try {
             // Process the payment
             $paymentResult = $this->processPaymentWithProvider($model);
-            
+
             if ($paymentResult['success']) {
                 // Update subscription with payment information
                 $this->updateSubscriptionAfterPayment($model, $paymentResult);
-                
+
                 // Send welcome email if first activation
                 if ($from === 'trial') {
                     $this->sendWelcomeEmail($model);
                 }
-                
+
                 // Reset failed attempts
                 $model->update(['reactivation_attempts' => 0]);
-                
+
                 Log::info("Payment processed successfully for subscription {$model->id}");
             } else {
-                throw new \Exception($paymentResult['error']);
+                throw new Exception($paymentResult['error']);
             }
-            
-        } catch (\Exception $e) {
+
+        } catch (Exception $e) {
             Log::error("Payment processing failed for subscription {$model->id}", [
                 'error' => $e->getMessage(),
                 'subscription_id' => $model->id,
             ]);
-            
+
             // In a real application, you might want to prevent the state transition
             throw $e;
         }
     }
-    
+
     private function processPaymentWithProvider(Model $model): array
     {
         // In a real application, this would integrate with:
         // - Stripe: $stripe->paymentIntents->create()
         // - PayPal: PayPal API calls
         // - Other payment providers
-        
+
         // Mock payment processing
         try {
             // Simulate payment processing delay
             // sleep(1);
-            
+
             // Mock successful payment
-            $transactionId = 'txn_' . uniqid();
-            
+            $transactionId = 'txn_'.uniqid();
+
             return [
                 'success' => true,
                 'transaction_id' => $transactionId,
@@ -79,15 +80,15 @@ class ProcessPayment implements Action
                 'currency' => $model->currency,
                 'processed_at' => now(),
             ];
-            
-        } catch (\Exception $e) {
+
+        } catch (Exception $e) {
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
         }
     }
-    
+
     private function updateSubscriptionAfterPayment(Model $model, array $paymentResult): void
     {
         $model->update([
@@ -100,12 +101,12 @@ class ProcessPayment implements Action
             ]),
         ]);
     }
-    
+
     private function sendWelcomeEmail(Model $model): void
     {
         // In a real application, this would send an actual email
         // Mail::to($model->user)->send(new WelcomeEmail($model));
-        
+
         Log::info("Welcome email sent to user {$model->user_id} for subscription {$model->id}");
     }
 }
