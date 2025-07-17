@@ -13,7 +13,7 @@ final class StateMachineTester
     /**
      * Assert that a transition is allowed.
      *
-     * @param  Model  $model  Model that uses HasStateMachine trait
+     * @param  Model&HasStateMachine  $model  Model that uses HasStateMachine trait
      */
     public static function assertTransitionAllowed(Model $model, string $toState, string $message = ''): void
     {
@@ -33,7 +33,7 @@ final class StateMachineTester
     /**
      * Assert that a transition is blocked.
      *
-     * @param  Model  $model  Model that uses HasStateMachine trait
+     * @param  Model&HasStateMachine  $model  Model that uses HasStateMachine trait
      */
     public static function assertTransitionBlocked(Model $model, string $toState, string $message = ''): void
     {
@@ -53,7 +53,7 @@ final class StateMachineTester
     /**
      * Assert that a model is in a specific state.
      *
-     * @param  Model  $model  Model that uses HasStateMachine trait
+     * @param  Model&HasStateMachine  $model  Model that uses HasStateMachine trait
      */
     public static function assertInState(Model $model, string $expectedState, string $message = ''): void
     {
@@ -73,7 +73,7 @@ final class StateMachineTester
     /**
      * Assert that a model has specific available transitions.
      *
-     * @param  Model  $model  Model that uses HasStateMachine trait
+     * @param  Model&HasStateMachine  $model  Model that uses HasStateMachine trait
      * @param  array<string>  $expectedTransitions
      */
     public static function assertHasAvailableTransitions(Model $model, array $expectedTransitions, string $message = ''): void
@@ -97,6 +97,8 @@ final class StateMachineTester
 
     /**
      * Assert that a model can execute a specific method.
+     *
+     * @param  Model&HasStateMachine  $model  Model that uses HasStateMachine trait
      */
     public static function assertCanExecuteMethod(Model $model, string $method, string $message = ''): void
     {
@@ -115,6 +117,8 @@ final class StateMachineTester
 
     /**
      * Assert that a model cannot execute a specific method.
+     *
+     * @param  Model&HasStateMachine  $model  Model that uses HasStateMachine trait
      */
     public static function assertCannotExecuteMethod(Model $model, string $method, string $message = ''): void
     {
@@ -134,7 +138,7 @@ final class StateMachineTester
     /**
      * Get all available transitions for a model.
      *
-     * @param  Model  $model  Model that uses HasStateMachine trait
+     * @param  Model&HasStateMachine  $model  Model that uses HasStateMachine trait
      * @return array<string, array<string>>
      */
     public static function transitionsFor(Model $model): array
