@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Grazulex\LaravelStatecraft\Console\Commands\GenerateCommand;
-use Grazulex\LaravelStatecraft\Console\Commands\GenerateFromYamlCommand;
 use Grazulex\LaravelStatecraft\Console\Commands\MakeStateMachineCommand;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
@@ -14,7 +13,6 @@ it('commands are properly registered', function () {
     $commands = [
         'statecraft:make' => MakeStateMachineCommand::class,
         'statecraft:generate' => GenerateCommand::class,
-        'state:generate-from-yaml' => GenerateFromYamlCommand::class,
     ];
 
     foreach ($commands as $signature => $class) {
@@ -117,9 +115,4 @@ it('GenerateCommand exists and has correct signature', function () {
     expect($command->getName())->toBe('statecraft:generate');
 });
 
-it('GenerateFromYamlCommand exists and has correct signature', function () {
-    $command = new GenerateFromYamlCommand();
-
-    expect($command)->toBeInstanceOf(GenerateFromYamlCommand::class);
-    expect($command->getName())->toBe('state:generate-from-yaml');
-});
+// Test for GenerateFromYamlCommand removed as that command has been deprecated

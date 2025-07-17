@@ -197,6 +197,7 @@ ISSUE_BODY+="
 - [ ] Les exemples sont fonctionnels et à jour
 - [ ] Le style et la cohérence sont respectés
 - [ ] Aucun lien brisé ou référence obsolète
+- [ ] En dehors des changements de documentation ou exemples, aucune modification de code/test n'est nécessaire
 
 ---
 
