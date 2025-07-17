@@ -1,22 +1,22 @@
-# Nouvelles Commandes Console Laravel Statecraft
+# Laravel Statecraft Console Commands
 
-Ce document décrit les nouvelles commandes console disponibles dans Laravel Statecraft, similaires à celles de Laravel Arc et Flowpipe.
+This document describes the powerful console commands available in Laravel Statecraft, providing comprehensive tools for managing state machine definitions.
 
-## Commandes Disponibles
+## Available Commands
 
-### 1. `statecraft:list` - Lister les définitions YAML
+### 1. `statecraft:list` - List YAML Definitions
 
-Liste toutes les définitions de machines d'état YAML dans le répertoire configuré.
+Lists all YAML state machine definitions in the configured directory.
 
 ```bash
-# Liste toutes les définitions dans le répertoire par défaut
+# List all definitions in default directory
 php artisan statecraft:list
 
-# Liste toutes les définitions dans un répertoire personnalisé
+# List all definitions in a custom directory
 php artisan statecraft:list --path=/path/to/statemachines
 ```
 
-**Sortie :**
+**Output:**
 ```
 +------------+---------------+------------------+--------+-------------+---------+-------+
 | File       | Name          | Model            | States | Transitions | Initial | Field |
@@ -25,22 +25,22 @@ php artisan statecraft:list --path=/path/to/statemachines
 +------------+---------------+------------------+--------+-------------+---------+-------+
 ```
 
-### 2. `statecraft:show` - Afficher le contenu d'une définition
+### 2. `statecraft:show` - Show Definition Content
 
-Affiche le contenu détaillé d'une définition YAML spécifique.
+Shows detailed content of a specific YAML definition.
 
 ```bash
-# Affiche le contenu analysé d'une définition
+# Show parsed content of a definition
 php artisan statecraft:show order
 
-# Affiche le contenu brut YAML
+# Show raw YAML content
 php artisan statecraft:show order --raw
 
-# Utilise un répertoire personnalisé
+# Use custom directory
 php artisan statecraft:show order --path=/path/to/statemachines
 ```
 
-**Sortie :**
+**Output:**
 ```
 State Machine Definition: resources/statemachines/order.yaml
 
@@ -68,30 +68,30 @@ Statistics:
   Transitions with actions: 2
 ```
 
-### 3. `statecraft:export` - Exporter dans différents formats
+### 3. `statecraft:export` - Export to Different Formats
 
-Exporte une définition YAML dans différents formats (JSON, Mermaid, Markdown).
+Exports a YAML definition to different formats (JSON, Mermaid, Markdown).
 
 ```bash
-# Export vers JSON (console)
+# Export to JSON (console)
 php artisan statecraft:export order json
 
-# Export vers Mermaid (console)
+# Export to Mermaid (console)
 php artisan statecraft:export order mermaid
 
-# Export vers Markdown (console)
+# Export to Markdown (console)
 php artisan statecraft:export order md
 
-# Export vers un fichier
+# Export to file
 php artisan statecraft:export order json --output=/path/to/output.json
 
-# Utilise un répertoire personnalisé
+# Use custom directory
 php artisan statecraft:export order json --path=/path/to/statemachines
 ```
 
-#### Formats Supportés
+#### Supported Formats
 
-**JSON :**
+**JSON:**
 ```json
 {
     "name": "OrderWorkflow",
@@ -115,7 +115,7 @@ php artisan statecraft:export order json --path=/path/to/statemachines
 }
 ```
 
-**Mermaid :**
+**Mermaid:**
 ```mermaid
 stateDiagram-v2
     title OrderWorkflow
@@ -132,36 +132,36 @@ stateDiagram-v2
     rejected : rejected
 ```
 
-**Markdown :**
-- Informations de base
-- Liste des états
-- Tableau des transitions
-- Statistiques
-- Diagramme Mermaid intégré
+**Markdown:**
+- Basic information
+- States list
+- Transitions table
+- Statistics
+- Embedded Mermaid diagram
 
-### 4. `statecraft:validate` - Vérifier les définitions
+### 4. `statecraft:validate` - Validate Definitions
 
-Valide les définitions YAML pour détecter les erreurs de structure et de logique métier.
+Validates YAML definitions to detect structural and business logic errors.
 
 ```bash
-# Valide une définition spécifique
+# Validate specific definition
 php artisan statecraft:validate order
 
-# Valide toutes les définitions
+# Validate all definitions
 php artisan statecraft:validate --all
 
-# Utilise un répertoire personnalisé
+# Use custom directory
 php artisan statecraft:validate order --path=/path/to/statemachines
 ```
 
-**Sortie :**
+**Output:**
 ```
 Validating: order.yaml
 
 ✓ order.yaml is valid
 ```
 
-ou
+or
 
 ```
 ✗ order.yaml has validation errors:
@@ -169,81 +169,119 @@ ou
   - State 'invalid_state' is not reachable from initial state
 ```
 
-#### Types de Validation
+#### Validation Types
 
-1. **Validation de Structure :**
-   - Présence des champs requis (name, model, states, initial)
-   - Format des données
+1. **Structure Validation:**
+   - Required fields presence (name, model, states, initial)
+   - Data format validation
 
-2. **Validation de Logique Métier :**
-   - L'état initial existe dans la liste des états
-   - Les transitions référencent des états valides
-   - Détection d'états non accessibles
+2. **Business Logic Validation:**
+   - Initial state exists in states list
+   - Transitions reference valid states
+   - Unreachable states detection
 
-3. **Validation de Références :**
-   - Existence des classes de modèles
-   - Format des noms de classes de guards et actions
+3. **Reference Validation:**
+   - Model class existence
+   - Guard and action class name format validation
+
+### 5. `statecraft:make` - Generate YAML Definition
+
+Creates a new YAML state machine definition file.
+
+```bash
+# Generate basic definition
+php artisan statecraft:make order-workflow
+
+# Generate with custom options
+php artisan statecraft:make article-status --states=draft,review,published --initial=draft
+
+# Generate with custom model
+php artisan statecraft:make user-subscription --model=App\\Models\\User --states=trial,active,suspended
+```
+
+**Generated file structure:**
+- Basic state machine configuration
+- Model class path (auto-generated from name)
+- Default states and transitions
+- Commented guard and action examples
+
+### 6. `statecraft:generate` - Generate PHP Classes
+
+Generates PHP classes (guards, actions, model examples) from existing YAML definition.
+
+```bash
+# Generate classes from YAML
+php artisan statecraft:generate database/state_machines/order-workflow.yaml
+
+# Generate from custom path
+php artisan statecraft:generate storage/state_machines/custom-workflow.yaml
+```
+
+**Generated classes:**
+- **Guards**: `app/StateMachines/Guards/{GuardName}.php`
+- **Actions**: `app/StateMachines/Actions/{ActionName}.php`
+- **Model Example**: `app/StateMachines/{ModelName}Example.php`
 
 ## Configuration
 
-Les commandes utilisent la configuration suivante dans `config/statecraft.php` :
+The commands use the following configuration in `config/statecraft.php`:
 
 ```php
 return [
-    // Chemin par défaut pour les définitions YAML
+    // Default path for YAML definitions
     'definitions_path' => resource_path('statemachines'),
     
-    // Chemin par défaut pour le code généré
+    // Default path for generated code
     'generated_code_path' => app_path('StateMachines'),
 ];
 ```
 
-## Exemples d'Utilisation
+## Usage Examples
 
-### Workflow Typique
+### Typical Workflow
 
-1. **Lister les définitions disponibles :**
+1. **List available definitions:**
    ```bash
    php artisan statecraft:list
    ```
 
-2. **Examiner une définition spécifique :**
+2. **Examine specific definition:**
    ```bash
    php artisan statecraft:show order
    ```
 
-3. **Valider toutes les définitions :**
+3. **Validate all definitions:**
    ```bash
    php artisan statecraft:validate --all
    ```
 
-4. **Exporter pour documentation :**
+4. **Export for documentation:**
    ```bash
    php artisan statecraft:export order md --output=docs/order-workflow.md
    ```
 
-### Intégration CI/CD
+### CI/CD Integration
 
 ```bash
-# Dans votre pipeline CI/CD
+# In your CI/CD pipeline
 php artisan statecraft:validate --all
 ```
 
-### Génération de Documentation
+### Documentation Generation
 
 ```bash
-# Exporter tous les workflows en Markdown
+# Export all workflows to Markdown
 for file in resources/statemachines/*.yaml; do
     name=$(basename "$file" .yaml)
     php artisan statecraft:export "$name" md --output="docs/$name-workflow.md"
 done
 ```
 
-## Fonctionnalités Avancées
+## Advanced Features
 
-### Support des Guard Expressions
+### Guard Expression Support
 
-Les commandes supportent complètement les nouvelles expressions de guards :
+The commands fully support the new guard expressions:
 
 ```yaml
 transitions:
@@ -255,16 +293,16 @@ transitions:
         - HasMinimumAmount
 ```
 
-### Gestion d'Erreurs Robuste
+### Robust Error Handling
 
-- Gestion gracieuse des fichiers manquants
-- Messages d'erreur détaillés
-- Validation complète des définitions
+- Graceful handling of missing files
+- Detailed error messages
+- Complete definition validation
 
 ### Performance
 
-- Traitement en lot pour la validation
-- Mise en cache des définitions analysées
-- Optimisation pour les gros volumes de fichiers
+- Batch processing for validation
+- Caching of parsed definitions
+- Optimization for large file volumes
 
-Ces commandes rendent Laravel Statecraft plus facile à utiliser et à maintenir, en fournissant des outils puissants pour la gestion des définitions de machines d'état.
+These commands make Laravel Statecraft easier to use and maintain by providing powerful tools for state machine definition management.

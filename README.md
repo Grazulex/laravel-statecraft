@@ -14,10 +14,12 @@ Define entity workflows declaratively (YAML or PHP), and control transitions wit
 - 🧪 **Built-in test support** for transitions
 - 🔔 **Laravel event support** (`Transitioning`, `Transitioned`)
 - 🧾 **Optional transition history tracking**
-- ⚙️ **Artisan generators** for YAML definitions and PHP classes
+- ⚙️ **Comprehensive Artisan commands** for YAML definitions and PHP classes
 - 🔧 **Configurable** paths, events, and history tracking
 - 🎯 **Dynamic resolution** of guards and actions via Laravel container
 - 🧩 **Complex guard expressions** with nested conditional logic
+- 📊 **Export capabilities** (JSON, Mermaid, Markdown)
+- ✅ **Validation system** for YAML definitions
 - 📝 **Comprehensive documentation** and examples
 
 ---
@@ -235,6 +237,28 @@ This generates:
 - Guard classes in `app/StateMachines/Guards/`
 - Action classes in `app/StateMachines/Actions/`
 - Model examples in `app/StateMachines/`
+
+### List and Inspect Definitions
+
+```bash
+# List all YAML definitions
+php artisan statecraft:list
+
+# Show definition details
+php artisan statecraft:show order-workflow
+
+# Validate definitions
+php artisan statecraft:validate --all
+```
+
+### Export to Different Formats
+
+```bash
+# Export to JSON, Mermaid, or Markdown
+php artisan statecraft:export order-workflow json
+php artisan statecraft:export order-workflow mermaid
+php artisan statecraft:export order-workflow md --output=docs/workflow.md
+```
 
 ### Command Options
 
