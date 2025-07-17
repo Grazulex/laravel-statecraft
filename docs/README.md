@@ -4,20 +4,15 @@ This documentation covers all aspects of Laravel Statecraft, a package for state
 
 ## Documentation Structure
 
-### Main Files
-
-- **[CONSOLE_COMMANDS.md](CONSOLE_COMMANDS.md)** - Console commands guide
-- **[GUARD_EXPRESSIONS.md](GUARD_EXPRESSIONS.md)** - Guard expressions documentation
-- **[GUARDS_AND_ACTIONS.md](GUARDS_AND_ACTIONS.md)** - Guards and actions guide
-- **[CONFIGURATION.md](CONFIGURATION.md)** - Package configuration
-- **[EVENTS.md](EVENTS.md)** - Event system
-- **[HISTORY.md](HISTORY.md)** - Transition history
-- **[TESTING.md](TESTING.md)** - Tests and assertions
-- **[COMMANDS.md](COMMANDS.md)** - Existing commands guide
-
-### Example Files
-
-- **[user_workflow.md](user_workflow.md)** - User workflow example
+### Core Documentation
+- **[CONSOLE_COMMANDS.md](CONSOLE_COMMANDS.md)** - Guide complet des commandes console
+- **[GUARD_EXPRESSIONS.md](GUARD_EXPRESSIONS.md)** - Expressions de garde avancées
+- **[GUARDS_AND_ACTIONS.md](GUARDS_AND_ACTIONS.md)** - Guards et actions personnalisées
+- **[EVENTS.md](EVENTS.md)** - Système d'événements
+- **[TESTING.md](TESTING.md)** - Tests et assertions
+- **[CONFIGURATION.md](CONFIGURATION.md)** - Configuration du package
+- **[HISTORY.md](HISTORY.md)** - Historique des versions
+- **[user_workflow.md](user_workflow.md)** - Guide utilisateur détaillé
 
 ## Quick Start
 
@@ -25,10 +20,15 @@ This documentation covers all aspects of Laravel Statecraft, a package for state
    - See [CONFIGURATION.md](CONFIGURATION.md)
 
 2. **Create your first state machine**
-   - See [COMMANDS.md](COMMANDS.md)
+   ```bash
+   php artisan statecraft:make order-workflow
+   ```
 
 3. **Use the new console commands**
-   - See [CONSOLE_COMMANDS.md](CONSOLE_COMMANDS.md)
+   ```bash
+   php artisan statecraft:list
+   php artisan statecraft:validate --all
+   ```
 
 4. **Explore examples**
    - See the [../examples](../examples) folder
@@ -36,12 +36,15 @@ This documentation covers all aspects of Laravel Statecraft, a package for state
 ## Main Features
 
 ### Console Commands
-- `statecraft:list` - List definitions
-- `statecraft:show` - Show a definition
-- `statecraft:export` - Export to different formats
-- `statecraft:validate` - Validate definitions
-- `statecraft:make` - Generate YAML definition
-- `statecraft:generate` - Generate PHP classes
+Pour une documentation complète des commandes, consultez [CONSOLE_COMMANDS.md](CONSOLE_COMMANDS.md).
+
+Commandes disponibles :
+- `statecraft:list` - Liste les définitions
+- `statecraft:show` - Affiche une définition
+- `statecraft:export` - Export vers différents formats
+- `statecraft:validate` - Valide les définitions
+- `statecraft:make` - Génère une définition YAML
+- `statecraft:generate` - Génère les classes PHP
 
 ### Guards and Actions
 - Simple guards and complex expressions

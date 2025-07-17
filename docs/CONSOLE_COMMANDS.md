@@ -121,9 +121,9 @@ stateDiagram-v2
     title OrderWorkflow
 
     [*] --> draft
-    draft --> pending : [CanSubmit]
-    pending --> approved : [{"and":["IsManager","HasMinimumAmount"]}] / SendApprovalEmail
-    pending --> rejected : [IsManager] / SendRejectionEmail
+    draft --> pending : CanSubmit
+    pending --> approved : IsManager AND HasMinimumAmount / SendApprovalEmail
+    pending --> rejected : IsManager / SendRejectionEmail
 
     %% State descriptions
     draft : draft
@@ -199,8 +199,14 @@ php artisan statecraft:make article-status --states=draft,review,published --ini
 php artisan statecraft:make user-subscription --model=App\\Models\\User --states=trial,active,suspended
 ```
 
-**Generated file structure:**
-- Basic state machine configuration
+#### Options
+- `--model=` : Specify the model class name (default: auto-generated from name)
+- `--states=` : Comma-separated list of states (default: draft,published)
+- `--initial=` : The initial state (default: first state in list)
+
+#### Generated File Structure
+The command creates a YAML file at `database/state_machines/{name}.yaml` with:
+- Basic state machine structure
 - Model class path (auto-generated from name)
 - Default states and transitions
 - Commented guard and action examples
@@ -217,10 +223,17 @@ php artisan statecraft:generate database/state_machines/order-workflow.yaml
 php artisan statecraft:generate storage/state_machines/custom-workflow.yaml
 ```
 
-**Generated classes:**
+#### Generated Classes
 - **Guards**: `app/StateMachines/Guards/{GuardName}.php`
 - **Actions**: `app/StateMachines/Actions/{ActionName}.php`
 - **Model Example**: `app/StateMachines/{ModelName}Example.php`
+
+#### Stub-Based Generation
+Both commands use stub files located in `src/Console/Commands/stubs/`:
+- `state-machine.yaml.stub` - Template for YAML definitions
+- `guard.php.stub` - Template for guard classes
+- `action.php.stub` - Template for action classes  
+- `model.php.stub` - Template for model examples
 
 ## Configuration
 
@@ -233,6 +246,9 @@ return [
     
     // Default path for generated code
     'generated_code_path' => app_path('StateMachines'),
+    
+    // Path for state machine definitions
+    'state_machines_path' => database_path('state_machines'),
 ];
 ```
 
@@ -276,6 +292,28 @@ for file in resources/statemachines/*.yaml; do
     php artisan statecraft:export "$name" md --output="docs/$name-workflow.md"
 done
 ```
+
+## Testing
+
+Comprehensive test coverage includes:
+- Command registration in service provider
+- YAML file generation and validation
+- PHP class generation from YAML
+- Configuration path usage
+- File structure validation
+- Content validation
+
+All commands are fully tested with **comprehensive test coverage**.
+
+## Features
+
+✅ **Stub-based generation** - Uses templates for consistent output
+✅ **Configuration-driven** - Respects user-defined paths
+✅ **Proper naming** - Follows Laravel package conventions
+✅ **Comprehensive testing** - Full test coverage
+✅ **Error handling** - Proper error messages and validation
+✅ **Auto-discovery** - Automatically extracts guards and actions from YAML
+✅ **Namespace support** - Proper namespace handling for generated classes
 
 ## Advanced Features
 
