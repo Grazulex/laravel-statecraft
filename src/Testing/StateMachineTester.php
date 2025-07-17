@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Grazulex\LaravelStatecraft\Testing;
 
-use Grazulex\LaravelStatecraft\Support\StateMachineManager;
 use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
 use Illuminate\Database\Eloquent\Model;
 use PHPUnit\Framework\Assert;
 
-class StateMachineTester
+final class StateMachineTester
 {
     /**
      * Assert that a transition is allowed.
@@ -22,12 +21,11 @@ class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $canTransition = $manager->canTransition($model, $toState);
+        $canMethod = 'can'.ucfirst($toState);
 
         Assert::assertTrue(
-            $canTransition,
-            $message !== '' && $message !== '0' ? $message : "Transition from '{$manager->getCurrentState($model)}' to '{$toState}' should be allowed"
+            $model->$canMethod(),
+            $message !== '' && $message !== '0' ? $message : "Expected transition to '$toState' to be allowed, but it was blocked."
         );
     }
 
@@ -42,12 +40,11 @@ class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $canTransition = $manager->canTransition($model, $toState);
+        $canMethod = 'can'.ucfirst($toState);
 
         Assert::assertFalse(
-            $canTransition,
-            $message !== '' && $message !== '0' ? $message : "Transition from '{$manager->getCurrentState($model)}' to '{$toState}' should be blocked"
+            $model->$canMethod(),
+            $message !== '' && $message !== '0' ? $message : "Expected transition to '$toState' to be blocked, but it was allowed."
         );
     }
 
@@ -62,8 +59,7 @@ class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $currentState = $manager->getCurrentState($model);
+        $currentState = $model->getCurrentState();
 
         Assert::assertEquals(
             $expectedState,
@@ -84,8 +80,7 @@ class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $availableTransitions = $manager->getAvailableTransitions($model);
+        $availableTransitions = $model->getAvailableTransitions();
         $availableStates = array_column($availableTransitions, 'to');
 
         sort($expectedTransitions);
@@ -144,9 +139,8 @@ class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $currentState = $manager->getCurrentState($model);
-        $availableTransitions = $manager->getAvailableTransitions($model);
+        $currentState = $model->getCurrentState();
+        $availableTransitions = $model->getAvailableTransitions();
 
         $transitions = [];
         foreach ($availableTransitions as $transition) {
@@ -156,16 +150,4 @@ class StateMachineTester
         return [$currentState => $transitions];
     }
 
-    /**
-     * Get the state machine manager from a model with the trait.
-     *
-     * @param  Model  $model  Model that uses HasStateMachine trait
-     */
-    private static function getStateMachineManager(Model $model): StateMachineManager
-    {
-        /** @var callable $getManager */
-        $getManager = [$model, 'getStateMachineManager'];
-
-        return call_user_func($getManager);
-    }
 }
