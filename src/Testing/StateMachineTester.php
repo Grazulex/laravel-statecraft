@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Grazulex\LaravelStatecraft\Testing;
 
-use Grazulex\LaravelStatecraft\Support\StateMachineManager;
 use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
 use Illuminate\Database\Eloquent\Model;
 use PHPUnit\Framework\Assert;
@@ -22,8 +21,8 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $canTransition = $manager->canTransition($model, $toState);
+        $canMethod = 'can' . self::stateToMethod($toState);
+        $canTransition = $model->$canMethod();
 
         Assert::assertTrue(
             $canTransition,
@@ -42,8 +41,8 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $canTransition = $manager->canTransition($model, $toState);
+        $canMethod = 'can' . self::stateToMethod($toState);
+        $canTransition = $model->$canMethod();
 
         Assert::assertFalse(
             $canTransition,
@@ -62,8 +61,7 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $currentState = $manager->getCurrentState($model);
+        $currentState = $model->getCurrentState();
 
         Assert::assertEquals(
             $expectedState,
@@ -84,8 +82,7 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $availableTransitions = $manager->getAvailableTransitions($model);
+        $availableTransitions = $model->getAvailableTransitions();
         $availableStates = array_column($availableTransitions, 'to');
 
         sort($expectedTransitions);
@@ -107,8 +104,8 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $canTransition = $manager->canTransition($model, $method);
+        $canMethod = 'can' . self::stateToMethod($method);
+        $canTransition = $model->$canMethod();
 
         Assert::assertTrue(
             $canTransition,
@@ -125,8 +122,8 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $canTransition = $manager->canTransition($model, $method);
+        $canMethod = 'can' . self::stateToMethod($method);
+        $canTransition = $model->$canMethod();
 
         Assert::assertFalse(
             $canTransition,
@@ -146,9 +143,8 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $manager = self::getStateMachineManager($model);
-        $currentState = $manager->getCurrentState($model);
-        $availableTransitions = $manager->getAvailableTransitions($model);
+        $currentState = $model->getCurrentState();
+        $availableTransitions = $model->getAvailableTransitions();
 
         $transitions = [];
         foreach ($availableTransitions as $transition) {
@@ -159,16 +155,29 @@ final class StateMachineTester
     }
 
     /**
-     * Get the state machine manager from a model with the trait.
-     *
-     * @param  Model  $model  Model that uses HasStateMachine trait
+     * Convert a state name to the corresponding method name.
      */
-    private static function getStateMachineManager(Model $model): StateMachineManager
+    private static function stateToMethod(string $state): string
     {
-        /** @var callable $getManager */
-        $getManager = [$model, 'getStateMachineManager'];
+        // Handle common state patterns by converting to verb form
+        $stateToVerb = [
+            'pending' => 'Submit',
+            'approved' => 'Approve',
+            'rejected' => 'Reject',
+            'published' => 'Publish',
+            'archived' => 'Archive',
+            'active' => 'Activate',
+            'inactive' => 'Deactivate',
+            'completed' => 'Complete',
+            'cancelled' => 'Cancel',
+        ];
 
-        return call_user_func($getManager);
+        if (isset($stateToVerb[$state])) {
+            return $stateToVerb[$state];
+        }
+
+        // Default: convert to PascalCase
+        return str_replace('_', '', ucwords($state, '_'));
     }
 
 }
