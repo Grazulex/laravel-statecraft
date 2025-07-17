@@ -54,16 +54,16 @@ YAML;
     file_put_contents($yamlPath, $yamlContent);
 
     // Run the generate command
+    $outputDir = config('statecraft.generated_code_path', app_path('StateMachines'));
     $this->artisan('statecraft:generate '.$yamlPath)
         ->expectsOutput('Generated guard: CanPublish')
         ->expectsOutput('Generated action: PublishAction')
         ->expectsOutput('Generated action: ArchiveAction')
         ->expectsOutput('Generated model example: TestProductExample')
-        ->expectsOutput('Files generated successfully in '.app_path('StateMachines'))
+        ->expectsOutput('Files generated successfully in '.$outputDir)
         ->assertExitCode(0);
 
     // Verify generated files
-    $outputDir = app_path('StateMachines');
     expect(file_exists($outputDir.'/Guards/CanPublish.php'))->toBeTrue();
     expect(file_exists($outputDir.'/Actions/PublishAction.php'))->toBeTrue();
     expect(file_exists($outputDir.'/Actions/ArchiveAction.php'))->toBeTrue();
