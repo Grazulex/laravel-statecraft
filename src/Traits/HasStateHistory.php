@@ -51,6 +51,7 @@ trait HasStateHistory
      */
     private function getStateMachineName(): string
     {
+        // @phpstan-ignore-next-line
         if (method_exists($this, 'getStateMachineDefinitionName')) {
             return $this->getStateMachineDefinitionName();
         }

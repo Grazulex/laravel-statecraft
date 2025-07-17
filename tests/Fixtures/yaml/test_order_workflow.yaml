@@ -1,6 +1,6 @@
 state_machine:
-  name: OrderWorkflow
-  model: Tests\Fixtures\Order
+  name: TestOrderWorkflow
+  model: Tests\Fixtures\TestOrder
   states: [draft, pending, approved, rejected, completed, cancelled]
   initial: draft
   transitions:
