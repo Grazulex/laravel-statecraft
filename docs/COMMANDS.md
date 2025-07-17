@@ -58,6 +58,31 @@ php artisan statecraft:generate storage/state_machines/custom-workflow.yaml
 - Uses `statecraft.generated_code_path` config for output directory
 - Defaults to `app/StateMachines/` if not configured
 
+### 3. `state:generate-from-yaml` - Legacy Generate Command
+
+An alternative command with a different signature for generating PHP classes from YAML.
+
+#### Usage
+```bash
+php artisan state:generate-from-yaml {file} [--output=path]
+```
+
+#### Examples
+```bash
+php artisan state:generate-from-yaml database/state_machines/order-workflow.yaml
+php artisan state:generate-from-yaml storage/state_machines/custom-workflow.yaml --output=app/MyStateMachines
+```
+
+#### Options
+- `--output=path` - Custom output directory (defaults to `app/StateMachines/`)
+
+#### Generated Classes
+- **Guards**: `{output}/Guards/{GuardName}.php`
+- **Actions**: `{output}/Actions/{ActionName}.php`
+- **Model Example**: `{output}/{ModelName}Example.php`
+
+**Note**: This command uses inline class generation instead of stub files.
+
 ## Stub-Based Generation
 
 Both commands use stub files located in `src/Console/Commands/stubs/`:

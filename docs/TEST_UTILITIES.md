@@ -7,7 +7,7 @@ La classe `StateMachineTester` fournit des utilitaires pour tester les transitio
 ### Assertions de transition
 
 ```php
-use Grazulex\LaravelStatecraft\Support\StateMachineTester;
+use Grazulex\LaravelStatecraft\Testing\StateMachineTester;
 
 // Vérifier qu'une transition est autorisée
 StateMachineTester::assertTransitionAllowed($order, 'approved');
