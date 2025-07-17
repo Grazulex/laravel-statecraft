@@ -8,7 +8,7 @@ use Grazulex\LaravelStatecraft\Traits\HasStateHistory;
 use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
 use Illuminate\Database\Eloquent\Model;
 
-class Order extends Model
+class TestOrder extends Model
 {
     use HasStateHistory, HasStateMachine;
 
@@ -47,6 +47,6 @@ class Order extends Model
      */
     protected function getStateMachineDefinitionName(): string
     {
-        return 'OrderWorkflow';
+        return 'TestOrderWorkflow';
     }
 }

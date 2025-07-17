@@ -7,6 +7,19 @@ namespace Grazulex\LaravelStatecraft\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property string $from_state
+ * @property string $to_state
+ * @property string|null $guard
+ * @property string|null $action
+ * @property array|null $metadata
+ * @property string $state_machine
+ * @property string $transition
+ * @property string $model_type
+ * @property int $model_id
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ */
 class StateTransition extends Model
 {
     protected $fillable = [
