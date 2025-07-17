@@ -1,7 +1,18 @@
-# 🧩 Laravel-Statecraft
+# Laravel Statecraft
 
-**Elegant and testable state machines for Laravel.**  
-Define entity workflows declaratively (YAML or PHP), and control transitions with guards, actions, and events.
+<div align="center">
+  <img src="logo.png" alt="Laravel Statecraft" width="100">
+  <p><strong>Elegant and testable state machines for Laravel applications — Define entity workflows declaratively (YAML), and control transitions with guards, actions, and events.</strong></p>
+  
+  [![Latest Version](https://img.shields.io/packagist/v/grazulex/laravel-statecraft)](https://packagist.org/packages/grazulex/laravel-statecraft)
+  [![Total Downloads](https://img.shields.io/packagist/dt/grazulex/laravel-statecraft)](https://packagist.org/packages/grazulex/laravel-statecraft)
+  [![License](https://img.shields.io/github/license/grazulex/laravel-statecraft)](LICENSE.md)
+  [![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://php.net)
+  [![Laravel Version](https://img.shields.io/badge/laravel-%5E12.19-red)](https://laravel.com)
+  [![Tests](https://github.com/Grazulex/laravel-statecraft/workflows/Tests/badge.svg)](https://github.com/Grazulex/laravel-statecraft/actions)
+  [![Code Quality](https://github.com/Grazulex/laravel-statecraft/workflows/Code%20Quality/badge.svg)](https://github.com/Grazulex/laravel-statecraft/actions)
+  [![Code Style](https://img.shields.io/badge/code%20style-pint-orange)](https://github.com/laravel/pint)
+</div>
 
 ---
 
