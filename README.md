@@ -352,8 +352,7 @@ Event::listen(StateTransitioned::class, function ($event) {
 
 For comprehensive documentation, examples, and advanced usage:
 
-- **[Console Commands](docs/CONSOLE_COMMANDS.md)** - New console commands reference
-- **[Commands](docs/COMMANDS.md)** - Artisan command reference  
+- **[Console Commands](docs/CONSOLE_COMMANDS.md)** - Console commands reference  
 - **[Guards and Actions](docs/GUARDS_AND_ACTIONS.md)** - Dynamic guards and actions
 - **[Guard Expressions](docs/GUARD_EXPRESSIONS.md)** - AND/OR/NOT logic for guards
 - **[Configuration](docs/CONFIGURATION.md)** - Configuration options
@@ -365,7 +364,7 @@ For comprehensive documentation, examples, and advanced usage:
 ## 🎯 Next Steps
 
 1. **Quick Start**: Check out the [OrderWorkflow example](examples/OrderWorkflow/)
-2. **Console Commands**: Explore the [new console commands](docs/CONSOLE_COMMANDS.md)
+2. **Console Commands**: Explore the [console commands](docs/CONSOLE_COMMANDS.md)
 3. **Guard Expressions**: See [guard-expressions-workflow.yaml](examples/OrderWorkflow/guard-expressions-workflow.yaml) for comprehensive examples
 4. **Advanced Usage**: Read the [Guards and Actions documentation](docs/GUARDS_AND_ACTIONS.md)
 5. **Configuration**: Review the [Configuration guide](docs/CONFIGURATION.md)
