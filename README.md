@@ -42,6 +42,7 @@ php artisan migrate
 
 The configuration file will be published to `config/statecraft.php` where you can customize:
 - State machine definitions path
+- Generated code output path  
 - Default state field name
 - Event system settings
 - History tracking options
@@ -183,6 +184,14 @@ This generates:
 - Guard classes in `app/StateMachines/Guards/`
 - Action classes in `app/StateMachines/Actions/`
 - Model examples in `app/StateMachines/`
+
+#### Alternative Generate Command
+
+```bash
+php artisan state:generate-from-yaml database/state_machines/order-workflow.yaml --output=app/MyWorkflows
+```
+
+This legacy command offers additional output path customization.
 
 ---
 
