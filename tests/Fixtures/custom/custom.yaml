@@ -1,0 +1,10 @@
+state_machine:
+  name: CustomWorkflow
+  model: App\Models\Custom
+  states:
+    - start
+    - end
+  initial: start
+  transitions:
+    - from: start
+      to: end

@@ -51,9 +51,18 @@ class GenerateCommand extends Command
     private function generateGuards(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition, string $outputDir): void
     {
         $guards = collect($definition->getTransitions())
-            ->map(function ($transition) {
-                return $transition['guard'] ?? null;
+            ->map(function ($transition): string|array|null {
+                $guard = $transition['guard'] ?? null;
+                if (is_string($guard)) {
+                    return $guard;
+                }
+                if (is_array($guard)) {
+                    return $this->extractGuardsFromExpression($guard);
+                }
+
+                return null;
             })
+            ->flatten()
             ->filter()
             ->unique();
 
@@ -130,5 +139,28 @@ class GenerateCommand extends Command
         }
 
         return $stub;
+    }
+
+    private function extractGuardsFromExpression(array $expression): array
+    {
+        $guards = [];
+
+        foreach ($expression as $key => $value) {
+            if (in_array($key, ['and', 'or', 'not'])) {
+                if (is_array($value)) {
+                    foreach ($value as $item) {
+                        if (is_string($item)) {
+                            $guards[] = $item;
+                        } elseif (is_array($item)) {
+                            $guards = array_merge($guards, $this->extractGuardsFromExpression($item));
+                        }
+                    }
+                } elseif (is_string($value)) {
+                    $guards[] = $value;
+                }
+            }
+        }
+
+        return $guards;
     }
 }

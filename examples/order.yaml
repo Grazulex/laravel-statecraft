@@ -1,0 +1,24 @@
+state_machine:
+  name: OrderWorkflow
+  model: App\Models\Order
+  states:
+    - draft
+    - pending
+    - approved
+    - rejected
+  initial: draft
+  transitions:
+    - from: draft
+      to: pending
+      guard: CanSubmit
+    - from: pending
+      to: approved
+      guard:
+        and:
+          - IsManager
+          - HasMinimumAmount
+      action: SendApprovalEmail
+    - from: pending
+      to: rejected
+      guard: IsManager
+      action: SendRejectionEmail

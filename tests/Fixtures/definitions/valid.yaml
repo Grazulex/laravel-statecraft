@@ -1,0 +1,22 @@
+state_machine:
+  name: ValidWorkflow
+  model: App\Models\Order
+  states:
+    - draft
+    - pending
+    - approved
+    - rejected
+  initial: draft
+  transitions:
+    - from: draft
+      to: pending
+      guard: CanSubmit
+      action: NotifyReviewer
+    - from: pending
+      to: approved
+      guard: IsManager
+      action: SendApprovalEmail
+    - from: pending
+      to: rejected
+      guard: IsManager
+      action: SendRejectionEmail
