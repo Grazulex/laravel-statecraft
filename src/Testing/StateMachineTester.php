@@ -133,6 +133,30 @@ class StateMachineTester
     }
 
     /**
+     * Get all available transitions for a model.
+     *
+     * @param  Model  $model  Model that uses HasStateMachine trait
+     * @return array<string, array<string>>
+     */
+    public static function transitionsFor(Model $model): array
+    {
+        if (! in_array(HasStateMachine::class, class_uses_recursive($model))) {
+            Assert::fail('Model must use HasStateMachine trait');
+        }
+
+        $manager = self::getStateMachineManager($model);
+        $currentState = $manager->getCurrentState($model);
+        $availableTransitions = $manager->getAvailableTransitions($model);
+
+        $transitions = [];
+        foreach ($availableTransitions as $transition) {
+            $transitions[] = $transition['to'];
+        }
+
+        return [$currentState => $transitions];
+    }
+
+    /**
      * Get the state machine manager from a model with the trait.
      *
      * @param  Model  $model  Model that uses HasStateMachine trait

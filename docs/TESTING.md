@@ -66,6 +66,17 @@ StateMachineTester::assertCannotExecuteMethod($model, 'approve');
 StateMachineTester::assertCannotExecuteMethod($order, 'ship', 'Cannot ship unpaid orders');
 ```
 
+### transitionsFor
+
+Get all available transitions for a model in a structured format:
+
+```php
+$transitions = StateMachineTester::transitionsFor($order);
+// Returns: ['current_state' => ['available_state1', 'available_state2']]
+```
+
+This method returns an array where the key is the current state and the value is an array of available destination states.
+
 ## Testing Examples
 
 ### Basic State Machine Testing

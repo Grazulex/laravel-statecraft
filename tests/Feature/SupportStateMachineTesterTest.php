@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Grazulex\LaravelStatecraft\Support\StateMachineTester;
+use Grazulex\LaravelStatecraft\Testing\StateMachineTester;
 use Tests\Fixtures\TestOrder;
 
 describe('StateMachineTester Integration', function () {
