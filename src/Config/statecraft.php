@@ -27,6 +27,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Generated Code Path
+    |--------------------------------------------------------------------------
+    |
+    | The path where generated PHP classes (guards, actions, models) are stored
+    | when using the statecraft:generate command.
+    |
+    */
+    'generated_code_path' => app_path('StateMachines'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Events
     |--------------------------------------------------------------------------
     |

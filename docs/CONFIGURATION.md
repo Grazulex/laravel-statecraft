@@ -48,6 +48,22 @@ The default database field name used to store the current state on your models. 
 'default_state_field' => 'current_step',
 ```
 
+### Generated Code Path
+
+**Default**: `app/StateMachines`
+
+```php
+'generated_code_path' => app_path('StateMachines'),
+```
+
+Directory where the `statecraft:generate` command creates PHP classes (guards, actions, model examples).
+
+**Examples**:
+```php
+'generated_code_path' => app_path('Workflows'),
+'generated_code_path' => base_path('src/StateMachines'),
+```
+
 ### Events Configuration
 
 **Default**: `true`
@@ -86,22 +102,6 @@ Controls automatic tracking of state transitions.
     'enabled' => true,
     'table' => 'state_transitions', // Custom table name
 ],
-```
-
-## Generated Code Path
-
-**Default**: `app/StateMachines`
-
-```php
-'generated_code_path' => app_path('StateMachines'),
-```
-
-Directory where the `statecraft:generate` command creates PHP classes.
-
-**Examples**:
-```php
-'generated_code_path' => app_path('Workflows'),
-'generated_code_path' => base_path('src/StateMachines'),
 ```
 
 ## Environment-Specific Configuration
