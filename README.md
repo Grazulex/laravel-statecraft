@@ -296,22 +296,30 @@ StateMachineTester::assertCannotExecuteMethod($order, 'reject');
 
 ### Testing Guard Expressions
 
+Test complex guard expressions by setting up your models and authentication:
+
 ```php
-// Test complex guard expressions
-$tester = new StateMachineTester($order);
-$tester->mockGuard('IsManager', true)
-       ->mockGuard('HasMinimumAmount', false)
-       ->mockGuard('IsVIP', true);
+// Test AND logic with actual conditions
+$manager = User::factory()->create(['is_manager' => true]);
+$order = Order::factory()->create(['amount' => 1000]);
+$this->actingAs($manager);
 
-// Test AND logic: (IsManager AND HasMinimumAmount) = (true AND false) = false
-$tester->assertCannotTransition('approved');
+// Both conditions true: IsManager AND HasMinimumAmount
+StateMachineTester::assertTransitionAllowed($order, 'approved');
 
-// Test OR logic: (IsManager OR IsVIP) = (true OR true) = true
-$tester->assertCanTransition('approved');
+// Make one condition false
+$nonManager = User::factory()->create(['is_manager' => false]);
+$this->actingAs($nonManager);
+StateMachineTester::assertTransitionBlocked($order, 'approved');
 
-// Test NOT logic: NOT IsBlacklisted = NOT false = true
-$tester->mockGuard('IsBlacklisted', false);
-$tester->assertCanTransition('approved');
+// Test OR logic with different conditions
+$vipOrder = Order::factory()->create(['is_vip' => true]);
+StateMachineTester::assertTransitionAllowed($vipOrder, 'approved');
+
+// Test NOT logic
+$blacklistedOrder = Order::factory()->create(['customer_blacklisted' => true]);
+StateMachineTester::assertTransitionBlocked($blacklistedOrder, 'approved');
+```
 ```
 
 ## 🔔 Events
