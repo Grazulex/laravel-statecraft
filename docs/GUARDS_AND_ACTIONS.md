@@ -1,47 +1,47 @@
-# Guards et Actions Dynamiques - Implémentation Complète
+# Guards and Actions - Dynamic Implementation
 
-## 🎯 Objectif Atteint
+## Overview
 
-J'ai implémenté avec succès le système de **Guards et Actions dynamiques** pour Laravel Statecraft, permettant aux utilisateurs de définir leurs propres conditions et comportements dans les transitions YAML.
+Laravel Statecraft provides a powerful system for **dynamic Guards and Actions**, allowing users to define custom conditions and behaviors in YAML transitions.
 
-## ✅ Fonctionnalités Implémentées
+## Features Implemented
 
-### 1. **Contrats (Interfaces)**
-- ✅ `Guard` interface pour les conditions
-- ✅ `Action` interface pour les comportements
-- ✅ Documentation complète avec PHPDoc
+### 1. **Contracts (Interfaces)**
+- ✅ `Guard` interface for conditions
+- ✅ `Action` interface for behaviors
+- ✅ Complete documentation with PHPDoc
 
-### 2. **Résolution Dynamique**
-- ✅ Résolution automatique via le Container Laravel
-- ✅ Validation d'interface pour les guards et actions
-- ✅ Gestion d'erreurs appropriée
+### 2. **Dynamic Resolution**
+- ✅ Automatic resolution via Laravel Container
+- ✅ Interface validation for guards and actions
+- ✅ Proper error handling
 
-### 3. **Exemples Complets**
-- ✅ 3 Guards d'exemple : `IsManager`, `CanSubmit`, `HasMinimumAmount`
-- ✅ 3 Actions d'exemple : `NotifyReviewer`, `SendConfirmationEmail`, `ProcessPayment`
-- ✅ Modèle `Order` d'exemple avec traits intégrés
+### 3. **Complete Examples**
+- ✅ 3 Guard examples: `IsManager`, `CanSubmit`, `HasMinimumAmount`
+- ✅ 3 Action examples: `NotifyReviewer`, `SendConfirmationEmail`, `ProcessPayment`
+- ✅ Example `Order` model with integrated traits
 
-### 4. **Configuration YAML**
-- ✅ Support des classes complètes : `App\Guards\IsManager`
-- ✅ Support des méthodes courtes : `canSubmit`, `notifyReviewer`
-- ✅ 2 workflows d'exemple : simple et avancé
+### 4. **YAML Configuration**
+- ✅ Support for full class names: `App\Guards\IsManager`
+- ✅ Support for short methods: `canSubmit`, `notifyReviewer`
+- ✅ 2 example workflows: simple and advanced
 
-### 5. **Tests Complets**
-- ✅ Tests unitaires pour chaque guard et action
-- ✅ Tests d'intégration avec le StateMachineManager
-- ✅ Tests de résolution dynamique
-- ✅ **14 nouveaux tests** - tous passent ✅
+### 5. **Complete Tests**
+- ✅ Unit tests for each guard and action
+- ✅ Integration tests with StateMachineManager
+- ✅ Dynamic resolution tests
+- ✅ **14 new tests** - all passing ✅
 
 ## 🏗️ Architecture
 
-### Flux de Résolution
+### Resolution Flow
 ```
 YAML Definition → StateMachineManager → Container → Guard/Action Instance → Execution
 ```
 
-### Exemple d'Utilisation
+### Usage Example
 
-#### Dans le YAML :
+#### In YAML:
 ```yaml
 - from: draft
   to: pending
@@ -49,63 +49,63 @@ YAML Definition → StateMachineManager → Container → Guard/Action Instance 
   action: Examples\OrderWorkflow\Actions\NotifyReviewer
 ```
 
-#### Dans le Code :
+#### In Code:
 ```php
 class Order extends Model {
     use HasStateMachine;
     
-    // Méthodes auto-générées disponibles :
-    $order->canSubmit();    // Vérifie si transition possible
-    $order->submit();       // Exécute transition avec guard/action
+    // Auto-generated methods available:
+    $order->canSubmit();    // Check if transition is possible
+    $order->submit();       // Execute transition with guard/action
 }
 ```
 
-## 📁 Structure des Fichiers
+## 📁 File Structure
 
 ```
 examples/OrderWorkflow/
 ├── Guards/
-│   ├── IsManager.php           # Vérifie permissions utilisateur
-│   ├── CanSubmit.php          # Valide données commande
-│   └── HasMinimumAmount.php    # Vérifie montant minimum
+│   ├── IsManager.php           # Check user permissions
+│   ├── CanSubmit.php          # Validate order data
+│   └── HasMinimumAmount.php    # Check minimum amount
 ├── Actions/
-│   ├── NotifyReviewer.php      # Notification au reviewer
-│   ├── SendConfirmationEmail.php # Email de confirmation
-│   └── ProcessPayment.php      # Traitement paiement
+│   ├── NotifyReviewer.php      # Notify reviewer
+│   ├── SendConfirmationEmail.php # Send confirmation email
+│   └── ProcessPayment.php      # Process payment
 ├── Models/
-│   └── Order.php               # Modèle d'exemple
-├── advanced-order-workflow.yaml # Workflow complet
-├── simple-order-workflow.yaml  # Workflow simplifié
-└── README.md                   # Documentation détaillée
+│   └── Order.php               # Example model
+├── advanced-order-workflow.yaml # Complete workflow
+├── simple-order-workflow.yaml  # Simplified workflow
+└── README.md                   # Detailed documentation
 ```
 
-## 🔧 Utilisation
+## 🔧 Usage
 
-### 1. Créer un Guard
+### 1. Create a Guard
 ```php
 class MyGuard implements \Grazulex\LaravelStatecraft\Contracts\Guard
 {
     public function check(Model $model, string $from, string $to): bool
     {
-        // Votre logique de validation
+        // Your validation logic
         return true;
     }
 }
 ```
 
-### 2. Créer une Action
+### 2. Create an Action
 ```php
 class MyAction implements \Grazulex\LaravelStatecraft\Contracts\Action
 {
     public function execute(Model $model, string $from, string $to): void
     {
-        // Votre logique d'action
-        Log::info("Action exécutée !");
+        // Your action logic
+        Log::info("Action executed!");
     }
 }
 ```
 
-### 3. Configurer dans le YAML
+### 3. Configure in YAML
 ```yaml
 transitions:
   - from: state_a
@@ -116,63 +116,124 @@ transitions:
 
 ## 🧪 Tests
 
-### Coverage Complète
-- **Guards** : 7 tests (validation des conditions)
-- **Actions** : 3 tests (exécution des comportements)
-- **Intégration** : 4 tests (résolution dynamique)
-- **Total** : 14 tests, 27 assertions ✅
+### Complete Coverage
+- **Guards**: 7 tests (condition validation)
+- **Actions**: 3 tests (behavior execution)
+- **Integration**: 4 tests (dynamic resolution)
+- **Total**: 14 tests, 27 assertions ✅
 
-### Résultats
+### Results
 ```
 Tests:    53 passed (134 assertions)
 Duration: 1.14s
 ```
 
-## 🎨 Exemples Pratiques
+## 🎨 Practical Examples
 
-### Workflow Simple
+### Simple Workflow
 ```yaml
-# Transitions avec méthodes courtes
+# Transitions with short methods
 - from: draft
   to: pending
   guard: canSubmit
   action: notifyReviewer
 ```
 
-### Workflow Avancé
+### Advanced Workflow
 ```yaml
-# Transitions avec classes complètes
+# Transitions with full class names
 - from: pending
   to: approved
   guard: Examples\OrderWorkflow\Guards\IsManager
   action: Examples\OrderWorkflow\Actions\SendConfirmationEmail
 ```
 
-### Utilisation en Code
+### Code Usage
 ```php
 $order = new Order([
     'customer_email' => 'client@example.com',
-    'items' => [['name' => 'Produit 1', 'price' => 100]],
+    'items' => [['name' => 'Product 1', 'price' => 100]],
     'amount' => 100
 ]);
 
-// Vérifications automatiques
+// Automatic checks
 if ($order->canSubmit()) {
-    $order->submit(); // Exécute guard + action
+    $order->submit(); // Execute guard + action
 }
 
-// État et transitions disponibles
+// State and available transitions
 $order->getCurrentState();
 $order->getAvailableTransitions();
 ```
 
-## 🚀 Prochaines Étapes
+## 🚀 Next Steps
 
-L'implémentation est **complète et fonctionnelle** avec :
-- ✅ Résolution dynamique des Guards et Actions
-- ✅ Support complet des deux syntaxes YAML
-- ✅ Exemples pratiques et documentation
-- ✅ Tests complets (53 tests passent)
-- ✅ Intégration parfaite avec le système existant
+The implementation is **complete and functional** with:
+- ✅ Dynamic resolution of Guards and Actions
+- ✅ Complete support for both YAML syntaxes
+- ✅ Practical examples and documentation
+- ✅ Complete tests (53 tests passing)
+- ✅ Perfect integration with existing system
 
-Le système est prêt pour la production et peut être étendu facilement avec de nouveaux Guards et Actions selon les besoins spécifiques de l'application ! 🎉
+The system is ready for production and can be easily extended with new Guards and Actions according to specific application needs! 🎉
+
+## Guard Interface
+
+```php
+interface Guard
+{
+    /**
+     * Check if the transition is allowed.
+     *
+     * @param Model $model The model being transitioned
+     * @param string $from The current state
+     * @param string $to The target state
+     * @return bool True if transition is allowed, false otherwise
+     */
+    public function check(Model $model, string $from, string $to): bool;
+}
+```
+
+## Action Interface
+
+```php
+interface Action
+{
+    /**
+     * Execute the action during transition.
+     *
+     * @param Model $model The model being transitioned
+     * @param string $from The current state
+     * @param string $to The target state
+     * @return void
+     */
+    public function execute(Model $model, string $from, string $to): void;
+}
+```
+
+## Dynamic Resolution
+
+Laravel Statecraft automatically resolves guards and actions using the Laravel service container. This means you can:
+
+1. **Use dependency injection** in your guards and actions
+2. **Bind interfaces** to implementations in your service provider
+3. **Use singleton patterns** for shared resources
+4. **Leverage Laravel's automatic resolution** for constructor parameters
+
+### Example with Dependency Injection
+
+```php
+class NotifyReviewer implements Action
+{
+    public function __construct(
+        private NotificationService $notifications,
+        private UserRepository $users
+    ) {}
+
+    public function execute(Model $model, string $from, string $to): void
+    {
+        $reviewers = $this->users->getReviewers();
+        $this->notifications->notifyReviewers($model, $reviewers);
+    }
+}
+```
