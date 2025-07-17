@@ -2,15 +2,11 @@
 
 Laravel Statecraft can automatically track state transitions, providing a complete audit trail of state changes for your models.
 
-# Historique des transitions d'état
-
-La fonctionnalité d'historique des transitions permet de suivre et d'enregistrer automatiquement toutes les transitions d'état effectuées sur vos modèles. Cela fournit une piste d'audit complète et permet d'analyser le comportement de votre application.
-
 ## Configuration
 
-### Activation de l'historique
+### Enabling History
 
-L'historique est désactivé par défaut. Pour l'activer, modifiez votre fichier de configuration :
+History is disabled by default. To enable it, modify your configuration file:
 
 ```php
 // config/statecraft.php
@@ -22,7 +18,14 @@ L'historique est désactivé par défaut. Pour l'activer, modifiez votre fichier
 
 ### Migration
 
-La migration pour la table d'historique est incluse dans le package :
+The migration for the history table is included in the package:
+
+```bash
+php artisan vendor:publish --tag=statecraft-migrations
+php artisan migrate
+```
+
+The migration creates this table structure:
 
 ```php
 // database/migrations/2024_01_01_000000_create_state_machine_history_table.php
@@ -42,11 +45,11 @@ Schema::create('state_machine_history', function (Blueprint $table) {
 });
 ```
 
-## Utilisation
+## Usage
 
-### Trait HasStateHistory
+### HasStateHistory Trait
 
-Pour activer l'historique sur un modèle, ajoutez le trait `HasStateHistory` :
+To enable history on a model, add the `HasStateHistory` trait:
 
 ```php
 use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
@@ -56,22 +59,22 @@ class Order extends Model
 {
     use HasStateMachine, HasStateHistory;
     
-    // ... reste du modèle
+    // ... rest of your model
 }
 ```
 
-### Enregistrement automatique
+### Automatic Recording
 
-Lorsque l'historique est activé et que le modèle utilise le trait `HasStateHistory`, les transitions sont automatiquement enregistrées par le `StateMachineManager`.
+When history is enabled and the model uses the `HasStateHistory` trait, transitions are automatically recorded by the `StateMachineManager`.
 
-### Accès à l'historique
+### Accessing History
 
-#### Récupérer tout l'historique
+#### Retrieve All History
 
 ```php
 $order = Order::find(1);
 
-// Récupérer toutes les transitions
+// Retrieve all transitions
 $history = $order->stateHistory()->orderBy('created_at')->get();
 
 foreach ($history as $transition) {
@@ -81,84 +84,84 @@ foreach ($history as $transition) {
     echo "Date: {$transition->created_at}";
     
     if ($transition->metadata) {
-        echo "Métadonnées: " . json_encode($transition->metadata);
+        echo "Metadata: " . json_encode($transition->metadata);
     }
 }
 ```
 
-#### Récupérer la dernière transition
+#### Retrieve Latest Transition
 
 ```php
 $order = Order::find(1);
 
 $latest = $order->latestStateTransition();
 if ($latest) {
-    echo "Dernière transition: {$latest->from_state} → {$latest->to_state}";
-    echo "Effectuée le: {$latest->created_at}";
+    echo "Latest transition: {$latest->from_state} → {$latest->to_state}";
+    echo "Performed on: {$latest->created_at}";
 }
 ```
 
-### Enregistrement manuel
+### Manual Recording
 
-Vous pouvez également enregistrer manuellement des transitions :
+You can also manually record transitions:
 
 ```php
 $order = Order::find(1);
 
 $order->recordStateTransition(
-    'draft',           // État de départ
-    'submitted',       // État d'arrivée
-    'order_workflow',  // Nom de la machine d'état
-    'submit',          // Nom de la transition
-    [                  // Métadonnées (optionnel)
+    'draft',           // From state
+    'submitted',       // To state
+    'order_workflow',  // State machine name
+    'submit',          // Transition name
+    [                  // Metadata (optional)
         'user_id' => auth()->id(),
-        'comment' => 'Commande soumise par le client',
+        'comment' => 'Order submitted by customer',
         'ip_address' => request()->ip(),
     ]
 );
 ```
 
-## Modèle StateTransition
+## StateTransition Model
 
-### Attributs
+### Attributes
 
-- `id` : Identifiant unique
-- `model_type` : Type du modèle (polymorphe)
-- `model_id` : ID du modèle (polymorphe)
-- `state_machine` : Nom de la machine d'état
-- `transition` : Nom de la transition
-- `from_state` : État de départ
-- `to_state` : État d'arrivée
-- `metadata` : Métadonnées JSON (optionnel)
-- `created_at` : Date de création
-- `updated_at` : Date de mise à jour
+- `id` : Unique identifier
+- `model_type` : Model type (polymorphic)
+- `model_id` : Model ID (polymorphic)
+- `state_machine` : State machine name
+- `transition` : Transition name
+- `from_state` : From state
+- `to_state` : To state
+- `metadata` : JSON metadata (optional)
+- `created_at` : Creation date
+- `updated_at` : Update date
 
-### Méthodes d'accès
+### Accessor Methods
 
-Le modèle `StateTransition` fournit des méthodes d'accès pour faciliter la lecture :
+The `StateTransition` model provides accessor methods for easier reading:
 
 ```php
 $transition = StateTransition::first();
 
-// Alias pour les attributs
-echo $transition->from;        // Équivalent à $transition->from_state
-echo $transition->to;          // Équivalent à $transition->to_state
-echo $transition->custom_data; // Équivalent à $transition->metadata
+// Aliases for attributes
+echo $transition->from;        // Equivalent to $transition->from_state
+echo $transition->to;          // Equivalent to $transition->to_state
+echo $transition->custom_data; // Equivalent to $transition->metadata
 ```
 
-### Relations
+### Relationships
 
 ```php
-// Récupérer le modèle associé
+// Get the associated model
 $model = $transition->model;
 
-// Récupérer les transitions d'un modèle
+// Get transitions for a model
 $transitions = $order->stateHistory;
 ```
 
-## Requêtes avancées
+## Advanced Queries
 
-### Filtrer par machine d'état
+### Filter by State Machine
 
 ```php
 $history = $order->stateHistory()
@@ -166,7 +169,7 @@ $history = $order->stateHistory()
     ->get();
 ```
 
-### Filtrer par états
+### Filter by States
 
 ```php
 $history = $order->stateHistory()
@@ -175,7 +178,7 @@ $history = $order->stateHistory()
     ->get();
 ```
 
-### Filtrer par période
+### Filter by Time Period
 
 ```php
 $history = $order->stateHistory()
@@ -186,7 +189,7 @@ $history = $order->stateHistory()
     ->get();
 ```
 
-### Rechercher dans les métadonnées
+### Search in Metadata
 
 ```php
 $history = $order->stateHistory()
@@ -194,20 +197,20 @@ $history = $order->stateHistory()
     ->get();
 ```
 
-## Intégration avec les événements
+## Event Integration
 
-L'historique fonctionne parfaitement avec le système d'événements. Vous pouvez écouter les événements pour effectuer des actions supplémentaires :
+History works perfectly with the event system. You can listen to events to perform additional actions:
 
 ```php
 use Grazulex\LaravelStatecraft\Events\StateTransitioned;
 
 Event::listen(StateTransitioned::class, function ($event) {
-    // L'historique a déjà été enregistré à ce point
+    // History has already been recorded at this point
     $model = $event->model;
     $history = $model->latestStateTransition();
     
-    // Effectuer des actions supplémentaires
-    Log::info("Transition enregistrée", [
+    // Perform additional actions
+    Log::info("Transition recorded", [
         'model' => get_class($model),
         'id' => $model->id,
         'transition' => $history->transition,
@@ -219,23 +222,23 @@ Event::listen(StateTransitioned::class, function ($event) {
 
 ## Performance
 
-### Indexation
+### Indexing
 
-La table d'historique est automatiquement indexée pour optimiser les performances :
+The history table is automatically indexed for optimal performance:
 
-- Index sur `model_type` et `model_id` (relation polymorphe)
-- Index sur `state_machine` (filtrage par machine)
-- Index sur `from_state` et `to_state` (filtrage par états)
+- Index on `model_type` and `model_id` (polymorphic relationship)
+- Index on `state_machine` (filtering by machine)
+- Index on `from_state` and `to_state` (filtering by states)
 
-### Purge de l'historique
+### History Purging
 
-Pour éviter l'accumulation excessive de données, vous pouvez mettre en place une purge périodique :
+To prevent excessive data accumulation, you can implement periodic purging:
 
 ```php
-// Supprimer l'historique plus ancien que 1 an
+// Delete history older than 1 year
 StateTransition::where('created_at', '<', now()->subYear())->delete();
 
-// Garder seulement les 100 dernières transitions par modèle
+// Keep only the last 100 transitions per model
 StateTransition::whereIn('id', function ($query) {
     $query->select('id')
         ->from('state_machine_history')
@@ -244,9 +247,9 @@ StateTransition::whereIn('id', function ($query) {
 })->delete();
 ```
 
-## Tests
+## Testing
 
-### Vérifier l'enregistrement de l'historique
+### Verify History Recording
 
 ```php
 test('history is recorded when enabled', function () {
@@ -264,7 +267,7 @@ test('history is recorded when enabled', function () {
 });
 ```
 
-### Vérifier la désactivation de l'historique
+### Verify History Disabling
 
 ```php
 test('history is not recorded when disabled', function () {
@@ -277,23 +280,35 @@ test('history is not recorded when disabled', function () {
 });
 ```
 
-## Dépannage
+## Troubleshooting
 
-### L'historique n'est pas enregistré
+### History Not Being Recorded
 
-1. Vérifiez que l'historique est activé dans la configuration
-2. Assurez-vous que le modèle utilise le trait `HasStateHistory`
-3. Vérifiez que la migration de la table d'historique a été exécutée
-4. Confirmez que les transitions passent par le `StateMachineManager`
+1. Check that history is enabled in the configuration
+2. Ensure the model uses the `HasStateHistory` trait
+3. Verify that the history table migration has been executed
+4. Confirm that transitions go through the `StateMachineManager`
 
-### Problèmes de performance
+### Performance Issues
 
-1. Vérifiez que les index sont correctement créés
-2. Considérez la mise en place d'une purge périodique
-3. Utilisez la pagination pour les grandes collections
-4. Optimisez les requêtes avec des index composites si nécessaire
+1. Verify that indexes are properly created
+2. Consider implementing periodic purging
+3. Use pagination for large collections
+4. Optimize queries with composite indexes if needed
 
-### Métadonnées non sauvegardées
+### Metadata Not Saved
+
+1. Ensure metadata is passed as an array
+2. Check that the metadata column is JSON type
+3. Verify the data is properly serialized
+
+## Best Practices
+
+1. **Enable history only when needed** - Don't enable globally if only some models need it
+2. **Use meaningful metadata** - Store relevant context for debugging
+3. **Implement purging** - Clean up old history periodically
+4. **Index properly** - Add custom indexes for your query patterns
+5. **Monitor performance** - Watch for slow queries as history grows
 
 1. Vérifiez que les métadonnées sont sérialisables en JSON
 2. Assurez-vous que la colonne `metadata` est de type JSON
