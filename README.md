@@ -14,10 +14,12 @@ Define entity workflows declaratively (YAML or PHP), and control transitions wit
 - 🧪 **Built-in test support** for transitions
 - 🔔 **Laravel event support** (`Transitioning`, `Transitioned`)
 - 🧾 **Optional transition history tracking**
-- ⚙️ **Artisan generators** for YAML definitions and PHP classes
+- ⚙️ **Comprehensive Artisan commands** for YAML definitions and PHP classes
 - 🔧 **Configurable** paths, events, and history tracking
 - 🎯 **Dynamic resolution** of guards and actions via Laravel container
 - 🧩 **Complex guard expressions** with nested conditional logic
+- 📊 **Export capabilities** (JSON, Mermaid, Markdown)
+- ✅ **Validation system** for YAML definitions
 - 📝 **Comprehensive documentation** and examples
 
 ---
@@ -236,6 +238,28 @@ This generates:
 - Action classes in `app/StateMachines/Actions/`
 - Model examples in `app/StateMachines/`
 
+### List and Inspect Definitions
+
+```bash
+# List all YAML definitions
+php artisan statecraft:list
+
+# Show definition details
+php artisan statecraft:show order-workflow
+
+# Validate definitions
+php artisan statecraft:validate --all
+```
+
+### Export to Different Formats
+
+```bash
+# Export to JSON, Mermaid, or Markdown
+php artisan statecraft:export order-workflow json
+php artisan statecraft:export order-workflow mermaid
+php artisan statecraft:export order-workflow md --output=docs/workflow.md
+```
+
 ### Command Options
 
 **statecraft:make** supports additional options:
@@ -272,22 +296,30 @@ StateMachineTester::assertCannotExecuteMethod($order, 'reject');
 
 ### Testing Guard Expressions
 
+Test complex guard expressions by setting up your models and authentication:
+
 ```php
-// Test complex guard expressions
-$tester = new StateMachineTester($order);
-$tester->mockGuard('IsManager', true)
-       ->mockGuard('HasMinimumAmount', false)
-       ->mockGuard('IsVIP', true);
+// Test AND logic with actual conditions
+$manager = User::factory()->create(['is_manager' => true]);
+$order = Order::factory()->create(['amount' => 1000]);
+$this->actingAs($manager);
 
-// Test AND logic: (IsManager AND HasMinimumAmount) = (true AND false) = false
-$tester->assertCannotTransition('approved');
+// Both conditions true: IsManager AND HasMinimumAmount
+StateMachineTester::assertTransitionAllowed($order, 'approved');
 
-// Test OR logic: (IsManager OR IsVIP) = (true OR true) = true
-$tester->assertCanTransition('approved');
+// Make one condition false
+$nonManager = User::factory()->create(['is_manager' => false]);
+$this->actingAs($nonManager);
+StateMachineTester::assertTransitionBlocked($order, 'approved');
 
-// Test NOT logic: NOT IsBlacklisted = NOT false = true
-$tester->mockGuard('IsBlacklisted', false);
-$tester->assertCanTransition('approved');
+// Test OR logic with different conditions
+$vipOrder = Order::factory()->create(['is_vip' => true]);
+StateMachineTester::assertTransitionAllowed($vipOrder, 'approved');
+
+// Test NOT logic
+$blacklistedOrder = Order::factory()->create(['customer_blacklisted' => true]);
+StateMachineTester::assertTransitionBlocked($blacklistedOrder, 'approved');
+```
 ```
 
 ## 🔔 Events

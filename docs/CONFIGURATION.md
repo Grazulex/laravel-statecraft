@@ -22,13 +22,30 @@ This creates `config/statecraft.php` with all available options.
 'state_machines_path' => database_path('state_machines'),
 ```
 
-Defines where your YAML state machine definitions are stored. Can be absolute or relative to Laravel base path.
+Defines where your YAML state machine definitions are stored for the `statecraft:make` command. Can be absolute or relative to Laravel base path.
 
 **Examples**:
 ```php
 'state_machines_path' => storage_path('state_machines'),
 'state_machines_path' => resource_path('workflows'),
 'state_machines_path' => '/var/www/workflows',
+```
+
+### Definitions Path
+
+**Default**: `resource_path('statemachines')`
+
+```php
+'definitions_path' => resource_path('statemachines'),
+```
+
+Defines where your YAML state machine definitions are stored for the `list`, `show`, `export`, and `validate` commands.
+
+**Examples**:
+```php
+'definitions_path' => database_path('state_machines'),
+'definitions_path' => storage_path('statemachines'),
+'definitions_path' => '/var/www/statemachines',
 ```
 
 ### Default State Field

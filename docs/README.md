@@ -1,74 +1,76 @@
 # Laravel Statecraft - Documentation
 
-Cette documentation couvre tous les aspects de Laravel Statecraft, un package pour la gestion des machines d'état dans Laravel.
+This documentation covers all aspects of Laravel Statecraft, a package for state machine management in Laravel.
 
-## Structure de la Documentation
+## Documentation Structure
 
-### Fichiers Principaux
+### Main Files
 
-- **[CONSOLE_COMMANDS.md](CONSOLE_COMMANDS.md)** - Guide des nouvelles commandes console
-- **[GUARD_EXPRESSIONS.md](GUARD_EXPRESSIONS.md)** - Documentation des expressions de guards
-- **[GUARDS_AND_ACTIONS.md](GUARDS_AND_ACTIONS.md)** - Guide des guards et actions
-- **[CONFIGURATION.md](CONFIGURATION.md)** - Configuration du package
-- **[EVENTS.md](EVENTS.md)** - Système d'événements
-- **[HISTORY.md](HISTORY.md)** - Historique des transitions
-- **[TESTING.md](TESTING.md)** - Tests et assertions
-- **[COMMANDS.md](COMMANDS.md)** - Guide des commandes existantes
+- **[CONSOLE_COMMANDS.md](CONSOLE_COMMANDS.md)** - Console commands guide
+- **[GUARD_EXPRESSIONS.md](GUARD_EXPRESSIONS.md)** - Guard expressions documentation
+- **[GUARDS_AND_ACTIONS.md](GUARDS_AND_ACTIONS.md)** - Guards and actions guide
+- **[CONFIGURATION.md](CONFIGURATION.md)** - Package configuration
+- **[EVENTS.md](EVENTS.md)** - Event system
+- **[HISTORY.md](HISTORY.md)** - Transition history
+- **[TESTING.md](TESTING.md)** - Tests and assertions
+- **[COMMANDS.md](COMMANDS.md)** - Existing commands guide
 
-### Fichiers d'Exemple
+### Example Files
 
-- **[user_workflow.md](user_workflow.md)** - Exemple de workflow utilisateur
+- **[user_workflow.md](user_workflow.md)** - User workflow example
 
-## Démarrage Rapide
+## Quick Start
 
-1. **Installation et Configuration**
-   - Voir [CONFIGURATION.md](CONFIGURATION.md)
+1. **Installation and Configuration**
+   - See [CONFIGURATION.md](CONFIGURATION.md)
 
-2. **Créer votre première machine d'état**
-   - Voir [COMMANDS.md](COMMANDS.md)
+2. **Create your first state machine**
+   - See [COMMANDS.md](COMMANDS.md)
 
-3. **Utiliser les nouvelles commandes console**
-   - Voir [CONSOLE_COMMANDS.md](CONSOLE_COMMANDS.md)
+3. **Use the new console commands**
+   - See [CONSOLE_COMMANDS.md](CONSOLE_COMMANDS.md)
 
-4. **Explorer les exemples**
-   - Voir le dossier [../examples](../examples)
+4. **Explore examples**
+   - See the [../examples](../examples) folder
 
-## Fonctionnalités Principales
+## Main Features
 
-### Commandes Console
-- `statecraft:list` - Lister les définitions
-- `statecraft:show` - Afficher une définition
-- `statecraft:export` - Exporter vers différents formats
-- `statecraft:validate` - Valider les définitions
+### Console Commands
+- `statecraft:list` - List definitions
+- `statecraft:show` - Show a definition
+- `statecraft:export` - Export to different formats
+- `statecraft:validate` - Validate definitions
+- `statecraft:make` - Generate YAML definition
+- `statecraft:generate` - Generate PHP classes
 
-### Guards et Actions
-- Guards simples et expressions complexes
-- Actions personnalisées
-- Validation automatique
+### Guards and Actions
+- Simple guards and complex expressions
+- Custom actions
+- Automatic validation
 
-### Système d'Événements
-- Événements de transition
-- Listeners personnalisés
-- Intégration Laravel
+### Event System
+- Transition events
+- Custom listeners
+- Laravel integration
 
-### Historique des Transitions
-- Enregistrement automatique
-- Métadonnées personnalisées
-- Requêtes d'historique
+### Transition History
+- Automatic recording
+- Custom metadata
+- History queries
 
-## Contribution
+## Contributing
 
-Pour contribuer à cette documentation :
+To contribute to this documentation:
 
-1. Suivre les conventions de nommage
-2. Inclure des exemples pratiques
-3. Maintenir la cohérence avec le style existant
-4. Tester tous les exemples de code
+1. Follow naming conventions
+2. Include practical examples
+3. Maintain consistency with existing style
+4. Test all code examples
 
 ## Support
 
-Pour toute question ou problème :
+For questions or issues:
 
-- Ouvrir une issue sur GitHub
-- Consulter la documentation complète
-- Voir les exemples dans le dossier [../examples](../examples)
+- Open an issue on GitHub
+- Consult the complete documentation
+- See examples in the [../examples](../examples) folder

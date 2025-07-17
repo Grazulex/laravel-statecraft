@@ -150,7 +150,7 @@ class OrderGuardTest extends TestCase
 
 ### Testing Guard Expressions
 
-Laravel Statecraft provides powerful utilities for testing complex guard expressions with AND/OR/NOT logic:
+Laravel Statecraft supports complex guard expressions, and you can test them using standard Laravel testing patterns:
 
 ```php
 class OrderGuardExpressionTest extends TestCase
@@ -167,164 +167,109 @@ class OrderGuardExpressionTest extends TestCase
         $this->actingAs($user);
         
         // Test AND expression: IsManager AND HasMinimumAmount
-        $tester = new StateMachineTester($order);
-        $tester->mockGuard('IsManager', true)
-               ->mockGuard('HasMinimumAmount', true);
+        // Both conditions should be true
+        StateMachineTester::assertTransitionAllowed($order, 'approved');
         
-        $tester->assertCanTransition('approved');
+        // Create non-manager user
+        $nonManager = User::factory()->create(['is_manager' => false]);
+        $this->actingAs($nonManager);
         
-        // Make one condition false
-        $tester->mockGuard('IsManager', false);
-        $tester->assertCannotTransition('approved');
+        // Now IsManager is false, so transition should be blocked
+        StateMachineTester::assertTransitionBlocked($order, 'approved');
     }
     
     public function test_or_logic_requires_at_least_one_condition(): void
     {
-        $order = Order::factory()->create(['status' => 'pending']);
+        $order = Order::factory()->create([
+            'status' => 'pending',
+            'is_vip' => true,
+            'customer_blacklisted' => false,
+        ]);
+        
+        $nonManager = User::factory()->create(['is_manager' => false]);
+        $this->actingAs($nonManager);
         
         // Test OR expression: IsManager OR IsVIP
-        $tester = new StateMachineTester($order);
-        $tester->mockGuard('IsManager', false)
-               ->mockGuard('IsVIP', true);
-        
-        $tester->assertCanTransition('approved');
+        // IsManager is false but IsVIP is true, so transition should be allowed
+        StateMachineTester::assertTransitionAllowed($order, 'approved');
         
         // Make both conditions false
-        $tester->mockGuard('IsVIP', false);
-        $tester->assertCannotTransition('approved');
+        $order->update(['is_vip' => false]);
+        StateMachineTester::assertTransitionBlocked($order, 'approved');
     }
     
     public function test_not_logic_requires_condition_to_be_false(): void
     {
-        $order = Order::factory()->create(['status' => 'pending']);
+        $order = Order::factory()->create([
+            'status' => 'pending',
+            'customer_blacklisted' => false,
+        ]);
         
         // Test NOT expression: NOT IsBlacklisted
-        $tester = new StateMachineTester($order);
-        $tester->mockGuard('IsBlacklisted', false);
+        // Customer is not blacklisted, so transition should be allowed
+        StateMachineTester::assertTransitionAllowed($order, 'approved');
         
-        $tester->assertCanTransition('approved');
-        
-        // Make condition true (blacklisted)
-        $tester->mockGuard('IsBlacklisted', true);
-        $tester->assertCannotTransition('approved');
+        // Make customer blacklisted
+        $order->update(['customer_blacklisted' => true]);
+        StateMachineTester::assertTransitionBlocked($order, 'approved');
     }
     
     public function test_nested_expressions(): void
     {
-        $order = Order::factory()->create(['status' => 'pending']);
-        
-        // Test nested expression: IsManager AND (IsVIP OR IsUrgent)
-        $tester = new StateMachineTester($order);
-        $tester->mockGuard('IsManager', true)
-               ->mockGuard('IsVIP', false)
-               ->mockGuard('IsUrgent', true);
-        
-        // IsManager = true AND (IsVIP = false OR IsUrgent = true)
-        // = true AND (false OR true) = true AND true = true
-        $tester->assertCanTransition('approved');
-        
-        // Make nested OR condition false
-        $tester->mockGuard('IsUrgent', false);
-        // IsManager = true AND (IsVIP = false OR IsUrgent = false)
-        // = true AND (false OR false) = true AND false = false
-        $tester->assertCannotTransition('approved');
-    }
-    
-    public function test_complex_real_world_scenario(): void
-    {
         $order = Order::factory()->create([
             'status' => 'pending',
-            'amount' => 1000,
-            'customer_blacklisted' => false,
             'is_vip' => false,
-            'is_urgent' => false,
+            'is_urgent' => true,
         ]);
         
-        // Complex expression: (IsManager AND HasMinimumAmount) OR (IsVIP AND NOT IsBlacklisted)
-        $tester = new StateMachineTester($order);
+        $manager = User::factory()->create(['is_manager' => true]);
+        $this->actingAs($manager);
         
-        // Scenario 1: Manager with sufficient amount
-        $tester->mockGuard('IsManager', true)
-               ->mockGuard('HasMinimumAmount', true)
-               ->mockGuard('IsVIP', false)
-               ->mockGuard('IsBlacklisted', false);
+        // Test nested expression: IsManager AND (IsVIP OR IsUrgent)
+        // IsManager = true AND (IsVIP = false OR IsUrgent = true)
+        // = true AND (false OR true) = true AND true = true
+        StateMachineTester::assertTransitionAllowed($order, 'approved');
         
-        $tester->assertCanTransition('approved');
-        
-        // Scenario 2: VIP customer not blacklisted
-        $tester->mockGuard('IsManager', false)
-               ->mockGuard('HasMinimumAmount', false)
-               ->mockGuard('IsVIP', true)
-               ->mockGuard('IsBlacklisted', false);
-        
-        $tester->assertCanTransition('approved');
-        
-        // Scenario 3: VIP customer but blacklisted
-        $tester->mockGuard('IsBlacklisted', true);
-        $tester->assertCannotTransition('approved');
-        
-        // Scenario 4: Neither condition met
-        $tester->mockGuard('IsManager', false)
-               ->mockGuard('IsVIP', false)
-               ->mockGuard('IsBlacklisted', false);
-        
-        $tester->assertCannotTransition('approved');
+        // Make nested OR condition false
+        $order->update(['is_urgent' => false]);
+        // IsManager = true AND (IsVIP = false OR IsUrgent = false)
+        // = true AND (false OR false) = true AND false = false
+        StateMachineTester::assertTransitionBlocked($order, 'approved');
     }
 }
 ```
 
-### Mock Guard Helpers
+### Testing Guards with Mocks
 
-The `StateMachineTester` provides convenient methods for mocking guard results:
-
-```php
-$tester = new StateMachineTester($model);
-
-// Mock individual guards
-$tester->mockGuard('IsManager', true);
-$tester->mockGuard('HasMinimumAmount', false);
-
-// Chain multiple mocks
-$tester->mockGuard('IsManager', true)
-       ->mockGuard('HasMinimumAmount', true)
-       ->mockGuard('IsVIP', false);
-
-// Mock with callback for dynamic behavior
-$tester->mockGuard('IsManager', function($model, $from, $to) {
-    return $model->user_role === 'manager';
-});
-
-// Clear all mocks
-$tester->clearMocks();
-```
-
-### Testing Performance
-
-Guard expressions are optimized for performance with short-circuit evaluation:
+When testing guard logic independently, you can use Laravel's mocking features:
 
 ```php
-public function test_guard_expression_performance(): void
+class OrderGuardMockTest extends TestCase
 {
-    $order = Order::factory()->create(['status' => 'pending']);
+    public function test_with_mocked_guard(): void
+    {
+        $mockGuard = $this->createMock(IsManager::class);
+        $mockGuard->method('check')->willReturn(true);
+        
+        $this->app->instance(IsManager::class, $mockGuard);
+        
+        $order = Order::factory()->pending()->create();
+        
+        StateMachineTester::assertTransitionAllowed($order, 'approved');
+    }
     
-    // AND expressions short-circuit on first false
-    $tester = new StateMachineTester($order);
-    $tester->mockGuard('FirstGuard', false);
-    $tester->mockGuard('SecondGuard', function() {
-        throw new Exception('Should not be called');
-    });
-    
-    // This should not throw an exception because FirstGuard is false
-    $tester->assertCannotTransition('approved');
-    
-    // OR expressions short-circuit on first true
-    $tester->mockGuard('FirstGuard', true);
-    $tester->mockGuard('SecondGuard', function() {
-        throw new Exception('Should not be called');
-    });
-    
-    // This should not throw an exception because FirstGuard is true
-    $tester->assertCanTransition('approved');
+    public function test_guard_with_dependency_injection(): void
+    {
+        // Mock the service that the guard depends on
+        $mockUserService = $this->createMock(UserService::class);
+        $mockUserService->method('isManager')->willReturn(true);
+        
+        $this->app->instance(UserService::class, $mockUserService);
+        
+        $order = Order::factory()->pending()->create();
+        
+        StateMachineTester::assertTransitionAllowed($order, 'approved');
+    }
 }
 ```
 
@@ -629,7 +574,7 @@ abstract class TestCase extends BaseTestCase
 }
 ```
 
-## Mocking and Stubbing
+### Mocking and Stubbing
 
 ### Mocking Guards
 
