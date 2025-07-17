@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Grazulex\LaravelStatecraft\Testing;
 
+use Grazulex\LaravelStatecraft\Support\StateMachineManager;
 use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
 use Illuminate\Database\Eloquent\Model;
 use PHPUnit\Framework\Assert;
@@ -21,10 +22,11 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $canMethod = 'can'.ucfirst($toState);
+        $manager = self::getStateMachineManager($model);
+        $canTransition = $manager->canTransition($model, $toState);
 
         Assert::assertTrue(
-            $model->$canMethod(),
+            $canTransition,
             $message !== '' && $message !== '0' ? $message : "Expected transition to '$toState' to be allowed, but it was blocked."
         );
     }
@@ -40,10 +42,11 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $canMethod = 'can'.ucfirst($toState);
+        $manager = self::getStateMachineManager($model);
+        $canTransition = $manager->canTransition($model, $toState);
 
         Assert::assertFalse(
-            $model->$canMethod(),
+            $canTransition,
             $message !== '' && $message !== '0' ? $message : "Expected transition to '$toState' to be blocked, but it was allowed."
         );
     }
@@ -59,7 +62,8 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $currentState = $model->getCurrentState();
+        $manager = self::getStateMachineManager($model);
+        $currentState = $manager->getCurrentState($model);
 
         Assert::assertEquals(
             $expectedState,
@@ -80,7 +84,8 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $availableTransitions = $model->getAvailableTransitions();
+        $manager = self::getStateMachineManager($model);
+        $availableTransitions = $manager->getAvailableTransitions($model);
         $availableStates = array_column($availableTransitions, 'to');
 
         sort($expectedTransitions);
@@ -102,10 +107,11 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $canMethod = 'can'.ucfirst($method);
+        $manager = self::getStateMachineManager($model);
+        $canTransition = $manager->canTransition($model, $method);
 
         Assert::assertTrue(
-            $model->$canMethod(),
+            $canTransition,
             $message !== '' && $message !== '0' ? $message : "Model should be able to execute '{$method}' method"
         );
     }
@@ -119,10 +125,11 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $canMethod = 'can'.ucfirst($method);
+        $manager = self::getStateMachineManager($model);
+        $canTransition = $manager->canTransition($model, $method);
 
         Assert::assertFalse(
-            $model->$canMethod(),
+            $canTransition,
             $message !== '' && $message !== '0' ? $message : "Model should not be able to execute '{$method}' method"
         );
     }
@@ -139,8 +146,9 @@ final class StateMachineTester
             Assert::fail('Model must use HasStateMachine trait');
         }
 
-        $currentState = $model->getCurrentState();
-        $availableTransitions = $model->getAvailableTransitions();
+        $manager = self::getStateMachineManager($model);
+        $currentState = $manager->getCurrentState($model);
+        $availableTransitions = $manager->getAvailableTransitions($model);
 
         $transitions = [];
         foreach ($availableTransitions as $transition) {
@@ -148,6 +156,19 @@ final class StateMachineTester
         }
 
         return [$currentState => $transitions];
+    }
+
+    /**
+     * Get the state machine manager from a model with the trait.
+     *
+     * @param  Model  $model  Model that uses HasStateMachine trait
+     */
+    private static function getStateMachineManager(Model $model): StateMachineManager
+    {
+        /** @var callable $getManager */
+        $getManager = [$model, 'getStateMachineManager'];
+
+        return call_user_func($getManager);
     }
 
 }
