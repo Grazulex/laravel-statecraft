@@ -1,11 +1,11 @@
-# Laravel Statecraft - Fichiers d'Exemple YAML
+# Laravel Statecraft - YAML Example Files
 
-Ce dossier contient des fichiers d'exemple YAML qui démontrent les différentes fonctionnalités de Laravel Statecraft.
+This directory contains example YAML files that demonstrate the different features of Laravel Statecraft.
 
-## Fichiers d'Exemple
+## Example Files
 
 ### 📄 `example-workflow.yaml`
-Exemple basique d'une machine d'état simple pour démonstration.
+Basic example of a simple state machine for demonstration.
 
 ```yaml
 state_machine:
@@ -27,7 +27,7 @@ state_machine:
 ```
 
 ### 📄 `order.yaml`
-Exemple d'un workflow de commande avec guards et actions.
+Example of an order workflow with guards and actions.
 
 ```yaml
 state_machine:
@@ -43,7 +43,6 @@ state_machine:
     - from: draft
       to: pending
       guard: CanSubmit
-      action: NotifyReviewer
     - from: pending
       to: approved
       guard:
@@ -58,7 +57,7 @@ state_machine:
 ```
 
 ### 📄 `user.yaml`
-Exemple d'un workflow utilisateur avec états multiples.
+Example of a user workflow with multiple states.
 
 ```yaml
 state_machine:
@@ -84,7 +83,7 @@ state_machine:
 ```
 
 ### 📄 `test.yaml`
-Fichier de test simple pour les tests unitaires.
+Simple test file for unit testing.
 
 ```yaml
 state_machine:
@@ -102,44 +101,44 @@ state_machine:
       to: approved
 ```
 
-## Utilisation
+## Usage
 
-Ces fichiers peuvent être utilisés pour :
+These files can be used for:
 
-1. **Apprentissage** - Comprendre la syntaxe YAML
-2. **Tests** - Tester les commandes console
-3. **Démarrage rapide** - Base pour vos propres workflows
+1. **Learning** - Understanding YAML syntax
+2. **Testing** - Testing console commands
+3. **Quick Start** - Base for your own workflows
 
-### Commandes Console
+### Console Commands
 
 ```bash
-# Lister tous les exemples
+# List all examples
 php artisan statecraft:list --path=examples
 
-# Afficher un exemple spécifique
+# Show specific example
 php artisan statecraft:show order --path=examples
 
-# Valider un exemple
+# Validate example
 php artisan statecraft:validate order --path=examples
 
-# Exporter un exemple
+# Export example
 php artisan statecraft:export order json --path=examples
 ```
 
-## Exemples Plus Complets
+## More Complete Examples
 
-Pour des exemples plus détaillés avec du code PHP complet, consultez les dossiers :
+For more detailed examples with complete PHP code, see the directories:
 
-- **[OrderWorkflow/](OrderWorkflow/)** - Exemple complet de workflow de commande
-- **[UserSubscription/](UserSubscription/)** - Workflow d'abonnement utilisateur
-- **[ArticlePublishing/](ArticlePublishing/)** - Workflow de publication d'article
-- **[EventUsage/](EventUsage/)** - Utilisation des événements
+- **[OrderWorkflow/](OrderWorkflow/)** - Complete order workflow example
+- **[UserSubscription/](UserSubscription/)** - User subscription workflow
+- **[ArticlePublishing/](ArticlePublishing/)** - Article publishing workflow
+- **[EventUsage/](EventUsage/)** - Event usage examples
 
-## Contribution
+## Contributing
 
-Pour ajouter de nouveaux exemples :
+To add new examples:
 
-1. Créer un nouveau fichier YAML
-2. Documenter la structure dans ce README
-3. Ajouter des tests si nécessaire
-4. Suivre les conventions de nommage existantes
+1. Create a new YAML file
+2. Document the structure in this README
+3. Add tests if necessary
+4. Follow existing naming conventions
