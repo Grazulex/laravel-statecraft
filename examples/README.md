@@ -39,7 +39,19 @@ An example focusing on:
 
 **States**: `trial → active → suspended → cancelled`
 
-### 4. More Examples Coming Soon
+### 4. Event Usage (Event-Driven Example)
+**Location**: [`examples/EventUsage/`](EventUsage/)
+
+An example focusing on:
+- **Event-driven state change reactions**
+- **Automatic notifications and logging**
+- **External service integration**
+- **Audit trail and metrics**
+- **Testing event listeners**
+
+**Features**: Comprehensive event handling patterns
+
+### 5. More Examples Coming Soon
 
 Additional examples are planned to demonstrate:
 - **Document approval workflows**
@@ -98,15 +110,15 @@ if ($order->canSubmit()) {
 
 ## Example Features Comparison
 
-| Feature | OrderWorkflow | ArticlePublishing | UserSubscription |
-|---------|---------------|-------------------|------------------|
-| **States** | 8 states | 4 states | 4 states |
-| **Guards** | 3 guards | 2 guards | 1 guard |
-| **Actions** | 3 actions | 2 actions | 3 actions |
-| **History** | ✅ | ✅ | ✅ |
-| **Events** | ✅ | ✅ | ✅ |
-| **Complexity** | Advanced | Simple | Medium |
-| **Use Case** | E-commerce | CMS | SaaS |
+| Feature | OrderWorkflow | ArticlePublishing | UserSubscription | EventUsage |
+|---------|---------------|-------------------|------------------|------------|
+| **States** | 8 states | 4 states | 4 states | Variable |
+| **Guards** | 3 guards | 2 guards | 1 guard | N/A |
+| **Actions** | 3 actions | 2 actions | 3 actions | N/A |
+| **History** | ✅ | ✅ | ✅ | ✅ |
+| **Events** | ✅ | ✅ | ✅ | ✅ |
+| **Complexity** | Advanced | Simple | Medium | Simple |
+| **Use Case** | E-commerce | CMS | SaaS | Events |
 
 ## Learning Path
 
@@ -115,15 +127,14 @@ if ($order->canSubmit()) {
 - Basic guards and actions
 - Easy to understand and modify
 
-### Intermediate: User Subscription
-- Event-driven state changes
-- Payment integration patterns
-- Complex business rules
+### Intermediate: Event Usage
+- Event-driven state change reactions
+- Automatic notifications and integrations
+- Testing event listeners
 
-### Advanced: Order Workflow
-- Complex multi-state workflow
-- Advanced guards with business logic
-- Real-world e-commerce scenario
+### Advanced: User Subscription or Order Workflow
+- **User Subscription**: Event-driven state changes, payment integration patterns, complex business rules
+- **Order Workflow**: Complex multi-state workflow, advanced guards with business logic, real-world e-commerce scenario
 
 ### Expert: Custom Examples
 - Build your own examples

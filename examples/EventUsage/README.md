@@ -1,34 +1,34 @@
-# Exemples d'utilisation des événements Laravel Statecraft
+# Laravel Statecraft Event Usage Examples
 
-## Usage basique avec closures
+## Basic Usage with Closures
 
 ```php
 use Grazulex\LaravelStatecraft\Events\StateTransitioning;
 use Grazulex\LaravelStatecraft\Events\StateTransitioned;
 use Illuminate\Support\Facades\Event;
 
-// Écouter les transitions en cours
+// Listen to transitions in progress
 Event::listen(StateTransitioning::class, function (StateTransitioning $event) {
     ray("🔄 Transition: {$event->from} → {$event->to}");
     
-    // Accès aux propriétés
-    $model = $event->model;  // Le modèle en transition
-    $from = $event->from;    // État source
-    $to = $event->to;        // État destination
-    $guard = $event->guard;  // Nom du guard (si présent)
-    $action = $event->action; // Nom de l'action (si présente)
+    // Access properties
+    $model = $event->model;  // The model being transitioned
+    $from = $event->from;    // Source state
+    $to = $event->to;        // Destination state
+    $guard = $event->guard;  // Guard name (if present)
+    $action = $event->action; // Action name (if present)
 });
 
-// Écouter les transitions terminées
+// Listen to completed transitions
 Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
-    Log::info("✅ Transition terminée: {$event->from} → {$event->to}", [
+    Log::info("✅ Transition completed: {$event->from} → {$event->to}", [
         'model' => get_class($event->model),
         'model_id' => $event->model->id,
     ]);
 });
 ```
 
-## Usage avec EventServiceProvider
+## Usage with EventServiceProvider
 
 ```php
 // app/Providers/EventServiceProvider.php
@@ -43,9 +43,9 @@ protected $listen = [
 ];
 ```
 
-## Exemples pratiques
+## Practical Examples
 
-### 1. Audit logging
+### 1. Audit Logging
 ```php
 Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
     AuditLog::create([
@@ -61,7 +61,7 @@ Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
 });
 ```
 
-### 2. Notifications automatiques
+### 2. Automatic Notifications
 ```php
 Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
     if ($event->model instanceof Order) {
@@ -75,14 +75,14 @@ Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
 });
 ```
 
-### 3. Intégration avec des services externes
+### 3. External Service Integration
 ```php
 Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
     if ($event->model instanceof Order && $event->to === 'approved') {
-        // Déclencher le processus de paiement
+        // Trigger payment processing
         PaymentService::processPayment($event->model);
         
-        // Notifier un webhook
+        // Notify webhook
         Http::post(config('webhooks.order_approved'), [
             'order_id' => $event->model->id,
             'from_state' => $event->from,
@@ -93,7 +93,7 @@ Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
 });
 ```
 
-### 4. Métriques et analytics
+### 4. Metrics and Analytics
 ```php
 Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
     Metrics::increment('state_transitions_total', [
@@ -106,16 +106,16 @@ Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
 
 ## Configuration
 
-Les événements peuvent être désactivés via la configuration :
+Events can be disabled via configuration:
 
 ```php
 // config/statecraft.php
 'events' => [
-    'enabled' => false, // Désactive les événements
+    'enabled' => false, // Disable events
 ],
 ```
 
-## Tests
+## Testing
 
 ```php
 public function test_events_are_dispatched(): void
@@ -130,10 +130,67 @@ public function test_events_are_dispatched(): void
 }
 ```
 
-## Bonnes pratiques
+## Best Practices
 
-1. **Maintenez les listeners légers** - Utilisez des queues pour les opérations lourdes
-2. **Filtrez tôt** - Vérifiez le type de modèle dès le début du listener
-3. **Gestion d'erreurs** - Encapsulez la logique dans des try-catch
-4. **Tests** - Testez vos listeners de manière isolée
-5. **Documentation** - Documentez les effets de bord de vos listeners
+1. **Keep listeners lightweight** - Use queues for heavy operations
+2. **Filter early** - Check model type at the beginning of the listener
+3. **Error handling** - Wrap logic in try-catch blocks
+4. **Testing** - Test your listeners in isolation
+5. **Documentation** - Document side effects of your listeners
+
+## Advanced Usage
+
+### Conditional Event Handling
+```php
+Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
+    // Only handle Order models
+    if (!$event->model instanceof Order) {
+        return;
+    }
+    
+    // Only handle specific transitions
+    if ($event->from === 'pending' && $event->to === 'approved') {
+        // Handle specific transition
+    }
+});
+```
+
+### Queued Event Listeners
+```php
+// app/Listeners/ProcessOrderApproval.php
+class ProcessOrderApproval implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function handle(StateTransitioned $event): void
+    {
+        if ($event->model instanceof Order && $event->to === 'approved') {
+            // Heavy processing that should be queued
+            ProcessPaymentJob::dispatch($event->model);
+            UpdateInventoryJob::dispatch($event->model);
+        }
+    }
+}
+```
+
+### Event Listener with Dependency Injection
+```php
+class OrderStateListener
+{
+    public function __construct(
+        private NotificationService $notifications,
+        private AuditService $audit
+    ) {}
+
+    public function handleTransitioning(StateTransitioning $event): void
+    {
+        $this->audit->logTransitionStart($event->model, $event->from, $event->to);
+    }
+
+    public function handleTransitioned(StateTransitioned $event): void
+    {
+        $this->audit->logTransitionEnd($event->model, $event->from, $event->to);
+        $this->notifications->sendStateChangeNotification($event->model, $event->to);
+    }
+}
+```

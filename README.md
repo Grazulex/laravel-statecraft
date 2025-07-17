@@ -184,6 +184,18 @@ This generates:
 - Action classes in `app/StateMachines/Actions/`
 - Model examples in `app/StateMachines/`
 
+### Command Options
+
+**statecraft:make** supports additional options:
+
+```bash
+php artisan statecraft:make order-workflow --model=App\\Models\\Order --states=draft,pending,approved --initial=draft
+```
+
+**statecraft:generate** uses configurable output paths:
+- Configure output directory via `statecraft.generated_code_path`
+- Defaults to `app/StateMachines/` if not configured
+
 ---
 
 ## 🧪 Testing

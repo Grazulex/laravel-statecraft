@@ -49,4 +49,15 @@ return [
         'enabled' => false,
         'table' => 'state_machine_history',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Generated Code Path
+    |--------------------------------------------------------------------------
+    |
+    | The path where generated PHP classes (guards, actions, models)
+    | are created by the statecraft:generate command.
+    |
+    */
+    'generated_code_path' => app_path('StateMachines'),
 ];

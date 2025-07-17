@@ -12,14 +12,19 @@ Creates a new YAML state machine definition file.
 
 #### Usage
 ```bash
-php artisan statecraft:make {name}
+php artisan statecraft:make {name} [options]
 ```
+
+#### Options
+- `--model=` : Specify the model class name (default: auto-generated from name)
+- `--states=` : Comma-separated list of states (default: draft,published)
+- `--initial=` : The initial state (default: first state in list)
 
 #### Examples
 ```bash
 php artisan statecraft:make order-workflow
-php artisan statecraft:make article-status
-php artisan statecraft:make user-subscription
+php artisan statecraft:make article-status --states=draft,review,published --initial=draft
+php artisan statecraft:make user-subscription --model=App\\Models\\User --states=trial,active,suspended,cancelled
 ```
 
 #### Generated File Structure
