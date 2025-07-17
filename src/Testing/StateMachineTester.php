@@ -159,24 +159,9 @@ final class StateMachineTester
      */
     private static function stateToMethod(string $state): string
     {
-        // Handle common state patterns by converting to verb form
-        $stateToVerb = [
-            'pending' => 'Submit',
-            'approved' => 'Approve',
-            'rejected' => 'Reject',
-            'published' => 'Publish',
-            'archived' => 'Archive',
-            'active' => 'Activate',
-            'inactive' => 'Deactivate',
-            'completed' => 'Complete',
-            'cancelled' => 'Cancel',
-        ];
-
-        if (isset($stateToVerb[$state])) {
-            return $stateToVerb[$state];
-        }
-
-        // Default: convert to PascalCase
+        // Convert state name to PascalCase for method name
+        // e.g., "pending" -> "Pending" (for canPending method)
+        // e.g., "approved" -> "Approved" (for canApproved method)
         return str_replace('_', '', ucwords($state, '_'));
     }
 
