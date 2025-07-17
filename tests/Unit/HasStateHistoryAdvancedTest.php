@@ -16,57 +16,61 @@ describe('HasStateHistory Trait - Advanced Tests', function () {
 
     test('latestStateTransition method has correct signature', function () {
         $order = new Order();
-        
+
         // Test that the method exists and can be called
         expect(method_exists($order, 'latestStateTransition'))->toBeTrue();
-        
+
         // Test method reflection to ensure proper signature
         $reflection = new ReflectionMethod($order, 'latestStateTransition');
         $returnType = $reflection->getReturnType();
-        
+
         expect($returnType)->toBeInstanceOf(ReflectionNamedType::class);
-        expect($returnType->getName())->toBe(\Grazulex\LaravelStatecraft\Models\StateTransition::class);
+        expect($returnType->getName())->toBe(StateTransition::class);
         expect($returnType->allowsNull())->toBeTrue();
     });
 
     test('latestStateTransition query execution pattern', function () {
         // Test that latestStateTransition follows the correct query pattern
         $order = new Order();
-        
+
         // We'll test the method structure and behavior rather than actual database calls
         $reflection = new ReflectionMethod($order, 'latestStateTransition');
-        
+
         // Verify return type is correct
-        expect($reflection->getReturnType()->getName())->toBe(\Grazulex\LaravelStatecraft\Models\StateTransition::class);
+        expect($reflection->getReturnType()->getName())->toBe(StateTransition::class);
         expect($reflection->getReturnType()->allowsNull())->toBeTrue();
-        
+
         // Verify method is public
         expect($reflection->isPublic())->toBeTrue();
-        
+
         // Test that stateHistory relationship method exists (this is called in line 27)
         expect(method_exists($order, 'stateHistory'))->toBeTrue();
-        
+
         // Test the relationship return type
         $stateHistoryRelation = $order->stateHistory();
-        expect($stateHistoryRelation)->toBeInstanceOf(\Illuminate\Database\Eloquent\Relations\MorphMany::class);
+        expect($stateHistoryRelation)->toBeInstanceOf(MorphMany::class);
     });
 
     test('recordStateTransition with enabled configuration execution', function () {
         // Test the actual execution path when configuration is enabled
         config(['statecraft.history.enabled' => true]);
-        
+
         // Create a test model that uses an in-memory approach
-        $testModel = new class extends \Illuminate\Database\Eloquent\Model {
-            use \Grazulex\LaravelStatecraft\Traits\HasStateHistory;
-            
-            protected $table = 'test_models';
+        $testModel = new class extends Model
+        {
+            use HasStateHistory;
+
             public $incrementing = false;
+
             public $timestamps = false;
-            
+
+            protected $table = 'test_models';
+
             // Override stateHistory to return a mock that doesn't hit the database
             public function stateHistory()
             {
-                return new class {
+                return new class
+                {
                     public function create(array $attributes)
                     {
                         // Mock create method that doesn't hit database
@@ -75,42 +79,42 @@ describe('HasStateHistory Trait - Advanced Tests', function () {
                 };
             }
         };
-        
+
         // This should execute the code path in lines 37-44 and 45
         $testModel->recordStateTransition('from', 'to', 'guard', 'action', ['meta' => 'data']);
-        
+
         // Reset configuration
         config(['statecraft.history.enabled' => false]);
-        
+
         expect(true)->toBeTrue(); // Test passes if no exception is thrown
     });
 
     test('recordStateTransition disabled configuration path', function () {
         // Test the execution when configuration is disabled
         config(['statecraft.history.enabled' => false]);
-        
+
         $order = new Order();
-        
+
         // When disabled, the method should return early without hitting the database
         $order->recordStateTransition('from', 'to', 'guard', 'action', ['meta' => 'data']);
-        
+
         // Verify configuration is indeed false
         expect(config('statecraft.history.enabled'))->toBeFalse();
-        
+
         expect(true)->toBeTrue(); // Test passes if no exception is thrown
     });
 
     test('recordStateTransition configuration behavior', function () {
         $order = new Order();
-        
+
         // Test with enabled config
         config(['statecraft.history.enabled' => true]);
         expect(config('statecraft.history.enabled'))->toBeTrue();
-        
+
         // Test with disabled config
         config(['statecraft.history.enabled' => false]);
         expect(config('statecraft.history.enabled'))->toBeFalse();
-        
+
         // Test that the method can be called without throwing when disabled
         $order->recordStateTransition('from', 'to', null, null, []);
         expect(true)->toBeTrue(); // If we reach here, no exception was thrown
@@ -118,31 +122,33 @@ describe('HasStateHistory Trait - Advanced Tests', function () {
 
     test('getStateMachineName method execution paths', function () {
         // Test the method_exists path
-        $model = new class extends \Illuminate\Database\Eloquent\Model {
-            use \Grazulex\LaravelStatecraft\Traits\HasStateHistory;
-            
+        $model = new class extends Model
+        {
+            use HasStateHistory;
+
             public function getStateMachineDefinitionName(): string
             {
                 return 'custom-machine';
             }
         };
-        
+
         $reflection = new ReflectionClass($model);
         $method = $reflection->getMethod('getStateMachineName');
         $method->setAccessible(true);
-        
+
         $result = $method->invoke($model);
         expect($result)->toBe('custom-machine');
-        
+
         // Test the fallback path with a different model
-        $modelWithoutMethod = new class extends \Illuminate\Database\Eloquent\Model {
-            use \Grazulex\LaravelStatecraft\Traits\HasStateHistory;
+        $modelWithoutMethod = new class extends Model
+        {
+            use HasStateHistory;
         };
-        
+
         $reflection2 = new ReflectionClass($modelWithoutMethod);
         $method2 = $reflection2->getMethod('getStateMachineName');
         $method2->setAccessible(true);
-        
+
         $result2 = $method2->invoke($modelWithoutMethod);
         expect($result2)->toContain('Workflow');
     });
@@ -150,13 +156,13 @@ describe('HasStateHistory Trait - Advanced Tests', function () {
     test('stateHistory relationship returns correct morphMany configuration', function () {
         $order = new Order();
         $relation = $order->stateHistory();
-        
+
         // Test that the relationship is configured correctly
-        expect($relation)->toBeInstanceOf(\Illuminate\Database\Eloquent\Relations\MorphMany::class);
-        expect($relation->getRelated())->toBeInstanceOf(\Grazulex\LaravelStatecraft\Models\StateTransition::class);
+        expect($relation)->toBeInstanceOf(MorphMany::class);
+        expect($relation->getRelated())->toBeInstanceOf(StateTransition::class);
         expect($relation->getMorphType())->toBe('model_type');
         expect($relation->getForeignKeyName())->toBe('model_id');
-        
+
         // Test that the relationship uses the correct table
         expect($relation->getRelated()->getTable())->toBe(config('statecraft.history.table', 'state_transitions'));
     });

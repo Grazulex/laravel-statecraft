@@ -36,6 +36,14 @@ final class StateMachineManager
         $transition = $this->definition->getTransition($currentState, $to);
 
         if ($transition['guard']) {
+            // Si c'est une expression de guard (array), utiliser le parser
+            if (GuardExpressionParser::isExpression($transition['guard'])) {
+                $guardFunction = GuardExpressionParser::parse($transition['guard'], $currentState, $to);
+
+                return $guardFunction($model);
+            }
+
+            // Sinon, utiliser la logique classique
             $guard = $this->resolveGuard($transition['guard']);
 
             return $guard->check($model, $currentState, $to);
@@ -59,7 +67,8 @@ final class StateMachineManager
 
         // Fire transitioning event
         if (config('statecraft.events.enabled', true)) {
-            Event::dispatch(new StateTransitioning($model, $currentState, $to, $transition['guard'], $transition['action']));
+            $guardForEvent = is_array($transition['guard']) ? json_encode($transition['guard']) : $transition['guard'];
+            Event::dispatch(new StateTransitioning($model, $currentState, $to, $guardForEvent, $transition['action']));
         }
 
         // Execute action if defined
@@ -74,12 +83,14 @@ final class StateMachineManager
 
         // Record state transition history
         if (method_exists($model, 'recordStateTransition')) {
-            $model->recordStateTransition($currentState, $to, $transition['guard'], $transition['action']);
+            $guardForHistory = is_array($transition['guard']) ? json_encode($transition['guard']) : $transition['guard'];
+            $model->recordStateTransition($currentState, $to, $guardForHistory, $transition['action']);
         }
 
         // Fire transitioned event
         if (config('statecraft.events.enabled', true)) {
-            Event::dispatch(new StateTransitioned($model, $currentState, $to, $transition['guard'], $transition['action']));
+            $guardForEvent = is_array($transition['guard']) ? json_encode($transition['guard']) : $transition['guard'];
+            Event::dispatch(new StateTransitioned($model, $currentState, $to, $guardForEvent, $transition['action']));
         }
     }
 

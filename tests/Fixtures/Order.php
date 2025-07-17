@@ -27,12 +27,18 @@ class Order extends Model
         'payment_processed_at',
         'reviewed_at',
         'reviewer_id',
+        'is_manager',
+        'is_vip',
+        'is_urgent',
     ];
 
     protected $attributes = [
         'state' => 'draft',
         'amount' => 0,
         'user_role' => 'user',
+        'is_manager' => false,
+        'is_vip' => false,
+        'is_urgent' => false,
     ];
 
     // Override save method for testing
