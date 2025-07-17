@@ -1,23 +1,65 @@
-# Examples Overview
+# Laravel Statecraft - Exemples
 
-This directory contains practical examples demonstrating various Laravel Statecraft features and use cases.
+Ce dossier contient des exemples pratiques d'utilisation de Laravel Statecraft.
 
-## Available Examples
+## Structure des Exemples
 
-### 1. Order Workflow (Complete Example)
+### 📁 Fichiers YAML
+- **Fichiers d'exemple** : `*.yaml` - Configurations de base
+- **Documentation** : `YAML_EXAMPLES.md` - Guide détaillé des exemples YAML
+
+### 📁 Exemples de Code
+- **Order Workflow** : Exemple complet de workflow de commande
+- **Article Publishing** : Workflow de publication d'article
+- **User Subscription** : Workflow d'abonnement utilisateur
+- **Event Usage** : Utilisation des événements
+
+## Démarrage Rapide
+
+### 1. Utilisation des Exemples YAML
+
+```bash
+# Voir tous les exemples disponibles
+php artisan statecraft:list --path=examples
+
+# Afficher un exemple spécifique
+php artisan statecraft:show order --path=examples
+
+# Valider un exemple
+php artisan statecraft:validate order --path=examples
+```
+
+### 2. Adaptation à Votre Projet
+
+1. **Copiez** un fichier YAML d'exemple
+2. **Modifiez** le nom du modèle pour votre classe
+3. **Adaptez** les états et transitions
+4. **Ajoutez** vos guards et actions personnalisées
+
+## Exemples Disponibles
+
+### Workflows Simples
+- **example-workflow.yaml** - Workflow de base (draft → pending → approved/rejected)
+- **test.yaml** - Exemple minimal pour tests
+
+### Workflows Métier
+- **order.yaml** - Workflow de commande avec guards et actions
+- **user.yaml** - Workflow utilisateur avec états multiples
+
+### 1. Order Workflow (Exemple Complet)
 **Location**: [`examples/OrderWorkflow/`](OrderWorkflow/)
 
-A comprehensive example showing:
-- **Order management workflow** with multiple states
-- **Guards implementation** (permission checks, validation)
-- **Actions implementation** (notifications, processing)
-- **Both simple and advanced YAML configurations**
-- **Complete model integration** with traits
-- **Practical use cases** and business logic
+Exemple complet montrant :
+- **Workflow de gestion de commande** avec états multiples
+- **Implémentation des guards** (vérifications permissions, validation)
+- **Implémentation des actions** (notifications, traitement)
+- **Configurations YAML simples et avancées**
+- **Intégration complète du modèle** avec traits
+- **Cas d'usage pratiques** et logique métier
 
-**States**: `draft → pending → approved/rejected → paid → shipped → delivered`
+**États**: `draft → pending → approved/rejected → paid → shipped → delivered`
 
-### 2. Article Publishing (Simple Example)
+### 2. Article Publishing (Exemple Simple)
 **Location**: [`examples/ArticlePublishing/`](ArticlePublishing/)
 
 A straightforward example demonstrating:

@@ -25,6 +25,10 @@ final class LaravelStatecraftServiceProvider extends ServiceProvider
             $this->commands([
                 Console\Commands\MakeStateMachineCommand::class,
                 Console\Commands\GenerateCommand::class,
+                Console\Commands\ListCommand::class,
+                Console\Commands\ShowCommand::class,
+                Console\Commands\ExportCommand::class,
+                Console\Commands\ValidateCommand::class,
             ]);
         }
     }

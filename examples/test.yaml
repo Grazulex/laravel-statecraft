@@ -1,0 +1,13 @@
+state_machine:
+  name: TestWorkflow
+  model: App\Models\Test
+  states:
+    - draft
+    - pending
+    - approved
+  initial: draft
+  transitions:
+    - from: draft
+      to: pending
+    - from: pending
+      to: approved

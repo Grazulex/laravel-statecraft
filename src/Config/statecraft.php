@@ -16,6 +16,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Definitions Path
+    |--------------------------------------------------------------------------
+    |
+    | The path where your state machine YAML definitions are stored.
+    | Used by list, show, export and validate commands.
+    |
+    */
+    'definitions_path' => resource_path('statemachines'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Generated Code Path
+    |--------------------------------------------------------------------------
+    |
+    | The path where generated PHP classes (guards, actions, models) will be stored.
+    | Used by the generate command.
+    |
+    */
+    'generated_code_path' => app_path('StateMachines'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Default State Field
     |--------------------------------------------------------------------------
     |
@@ -49,15 +71,4 @@ return [
         'enabled' => false,
         'table' => 'state_machine_history',
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Generated Code Path
-    |--------------------------------------------------------------------------
-    |
-    | The path where generated PHP classes (guards, actions, models)
-    | are created by the statecraft:generate command.
-    |
-    */
-    'generated_code_path' => app_path('StateMachines'),
 ];

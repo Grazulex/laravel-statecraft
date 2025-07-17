@@ -1,0 +1,34 @@
+state_machine:
+  name: UserWorkflow
+  model: App\Models\User
+  states:
+    - inactive
+    - active
+    - suspended
+    - banned
+  initial: inactive
+  transitions:
+    - from: inactive
+      to: active
+      guard: EmailVerified
+      action: SendWelcomeEmail
+    - from: active
+      to: suspended
+      guard:
+        and:
+          - IsAdmin
+          - HasValidReason
+      action: NotifyUser
+    - from: suspended
+      to: active
+      guard: IsAdmin
+    - from: active
+      to: banned
+      guard:
+        or:
+          - IsAdmin
+          - IsSystemAdmin
+      action: NotifySecurityTeam
+    - from: suspended
+      to: banned
+      guard: IsSystemAdmin

@@ -1,0 +1,9 @@
+state_machine:
+  name: MissingTransitionKeysWorkflow
+  model: App\Models\Test
+  states:
+    - draft
+    - pending
+  initial: draft
+  transitions:
+    - from: draft
