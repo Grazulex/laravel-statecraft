@@ -15,8 +15,15 @@ Event::listen(StateTransitioning::class, function (StateTransitioning $event) {
     $model = $event->model;  // The model being transitioned
     $from = $event->from;    // Source state
     $to = $event->to;        // Destination state
-    $guard = $event->guard;  // Guard name (if present)
+    $guard = $event->guard;  // Guard name or expression (if present)
     $action = $event->action; // Action name (if present)
+    
+    // Handle guard expressions
+    if (is_array($guard)) {
+        ray("🛡️ Guard Expression: " . json_encode($guard));
+    } elseif (is_string($guard)) {
+        ray("🛡️ Simple Guard: {$guard}");
+    }
 });
 
 // Listen to completed transitions
@@ -137,6 +144,54 @@ public function test_events_are_dispatched(): void
 3. **Error handling** - Wrap logic in try-catch blocks
 4. **Testing** - Test your listeners in isolation
 5. **Documentation** - Document side effects of your listeners
+
+## Guard Expressions in Events
+
+When using guard expressions, events contain the full expression structure for advanced handling:
+
+```php
+Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
+    // Simple guard
+    if (is_string($event->guard)) {
+        Log::info("Guard: {$event->guard}");
+    }
+    
+    // Guard expressions
+    if (is_array($event->guard)) {
+        $this->handleGuardExpression($event->guard, $event);
+    }
+});
+
+private function handleGuardExpression(array $expression, StateTransitioned $event): void
+{
+    if (isset($expression['and'])) {
+        Log::info("All guards passed: " . implode(', ', $expression['and']));
+    } elseif (isset($expression['or'])) {
+        Log::info("One of these guards passed: " . implode(', ', $expression['or']));
+    } elseif (isset($expression['not'])) {
+        Log::info("Guard was false (inverted): {$expression['not']}");
+    }
+}
+```
+
+### Metrics for Guard Expressions
+
+```php
+Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
+    $guardType = is_array($event->guard) ? 'expression' : 'simple';
+    
+    Metrics::increment('guard_usage', [
+        'type' => $guardType,
+        'model' => class_basename($event->model),
+    ]);
+    
+    // Track expression complexity
+    if (is_array($event->guard)) {
+        $complexity = $this->calculateComplexity($event->guard);
+        Metrics::histogram('guard_expression_complexity', $complexity);
+    }
+});
+```
 
 ## Advanced Usage
 

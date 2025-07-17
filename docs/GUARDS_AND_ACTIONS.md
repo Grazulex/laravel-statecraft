@@ -177,6 +177,87 @@ The implementation is **complete and functional** with:
 
 The system is ready for production and can be easily extended with new Guards and Actions according to specific application needs! 🎉
 
+## 🧩 Guard Expressions
+
+Laravel Statecraft supports powerful guard expressions with AND/OR/NOT logic for complex business rules. This allows you to create sophisticated conditional logic directly in your YAML state machine definitions.
+
+### AND Logic - All conditions must be true
+
+```yaml
+- from: pending
+  to: approved
+  guard:
+    and:
+      - Examples\OrderWorkflow\Guards\IsManager
+      - Examples\OrderWorkflow\Guards\HasMinimumAmount
+```
+
+All specified guards must return `true` for the transition to be allowed.
+
+### OR Logic - At least one condition must be true
+
+```yaml
+- from: pending
+  to: approved
+  guard:
+    or:
+      - Examples\OrderWorkflow\Guards\IsManager
+      - Examples\OrderWorkflow\Guards\IsVIP
+```
+
+At least one of the specified guards must return `true` for the transition to be allowed.
+
+### NOT Logic - Condition must be false
+
+```yaml
+- from: pending
+  to: approved
+  guard:
+    not: Examples\OrderWorkflow\Guards\IsBlacklisted
+```
+
+The specified guard must return `false` for the transition to be allowed.
+
+### Nested Expressions - Complex combinations
+
+```yaml
+- from: pending
+  to: approved
+  guard:
+    and:
+      - Examples\OrderWorkflow\Guards\IsManager
+      - or:
+          - Examples\OrderWorkflow\Guards\IsVIP
+          - Examples\OrderWorkflow\Guards\IsUrgent
+```
+
+You can nest expressions to create complex business logic. This example requires the user to be a manager AND either VIP or urgent.
+
+### Backward Compatibility
+
+Simple string guards continue to work as before:
+
+```yaml
+- from: pending
+  to: approved
+  guard: Examples\OrderWorkflow\Guards\IsManager
+```
+
+### How It Works
+
+1. **Guard Expression Parser** - Automatically detects when a guard is an expression (array format with `and`, `or`, or `not` keys)
+2. **Guard Expression Evaluator** - Recursively evaluates nested expressions using proper boolean logic
+3. **Dynamic Resolution** - Guards are resolved from Laravel container at runtime
+4. **Event Integration** - Guard expressions are serialized to JSON in events and state history
+
+### Benefits
+
+- **Flexible Logic** - Combine multiple conditions with AND/OR/NOT operations
+- **Nested Expressions** - Create complex business rules with nested logic
+- **Readable YAML** - Clean, declarative syntax for guard conditions
+- **Dynamic Evaluation** - Guards are resolved and evaluated at runtime
+- **Full Integration** - Works with events, state history, and all existing features
+
 ## Guard Interface
 
 ```php

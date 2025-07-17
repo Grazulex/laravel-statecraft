@@ -1,6 +1,6 @@
 # Order Workflow Examples
 
-This directory contains examples of how to use Laravel Statecraft with Guards and Actions to create complex workflows.
+This directory contains examples of how to use Laravel Statecraft with Guards, Actions, and Guard Expressions to create complex workflows.
 
 ## Files Structure
 
@@ -9,19 +9,25 @@ examples/OrderWorkflow/
 ├── Guards/
 │   ├── CanSubmit.php           # Validates order before submission
 │   ├── HasMinimumAmount.php    # Checks minimum order amount
-│   └── IsManager.php           # Validates user permissions
+│   ├── IsManager.php           # Validates user permissions
+│   ├── IsVIP.php              # Checks VIP customer status
+│   ├── IsUrgent.php           # Checks urgent order flag
+│   ├── IsBlacklisted.php      # Checks customer blacklist status
+│   ├── IsCustomer.php         # Validates customer ownership
+│   └── IsProcessing.php       # Checks processing status
 ├── Actions/
 │   ├── NotifyReviewer.php      # Sends notification to reviewer
 │   ├── ProcessPayment.php      # Handles payment processing
 │   └── SendConfirmationEmail.php # Sends confirmation email
 ├── Models/
 │   └── Order.php               # Example Order model
-├── advanced-order-workflow.yaml # Complex workflow with full class names
-├── simple-order-workflow.yaml  # Simple workflow with method names
-└── README.md                   # This file
+├── advanced-order-workflow.yaml     # Complex workflow with full class names
+├── simple-order-workflow.yaml      # Simple workflow with method names
+├── guard-expressions-workflow.yaml # Guard expressions examples
+└── README.md                       # This file
 ```
 
-## Usage Examples
+## Workflow Examples
 
 ### 1. Using Full Class Names (Recommended)
 
@@ -40,6 +46,53 @@ examples/OrderWorkflow/
   guard: canSubmit
   action: notifyReviewer
 ```
+
+### 3. Using Guard Expressions (Advanced)
+
+```yaml
+# AND logic - All conditions must be true
+- from: pending
+  to: approved
+  guard:
+    and:
+      - Examples\OrderWorkflow\Guards\IsManager
+      - Examples\OrderWorkflow\Guards\HasMinimumAmount
+
+# OR logic - At least one condition must be true
+- from: pending
+  to: processing
+  guard:
+    or:
+      - Examples\OrderWorkflow\Guards\IsManager
+      - Examples\OrderWorkflow\Guards\IsVIP
+
+# NOT logic - Condition must be false
+- from: pending
+  to: rejected
+  guard:
+    not: Examples\OrderWorkflow\Guards\IsManager
+
+# Nested expressions - Complex business logic
+- from: approved
+  to: processing
+  guard:
+    and:
+      - Examples\OrderWorkflow\Guards\HasMinimumAmount
+      - or:
+          - Examples\OrderWorkflow\Guards\IsVIP
+          - Examples\OrderWorkflow\Guards\IsUrgent
+```
+
+## Guard Expressions
+
+Laravel Statecraft supports powerful guard expressions with AND/OR/NOT logic for complex business rules. See `guard-expressions-workflow.yaml` for comprehensive examples.
+
+### Key Features:
+- **AND Logic**: All conditions must be true
+- **OR Logic**: At least one condition must be true
+- **NOT Logic**: Condition must be false
+- **Nested Expressions**: Complex combinations supported
+- **Backward Compatibility**: Simple string guards still work
 
 ## Guards
 
@@ -63,6 +116,38 @@ Validates that an order meets the minimum amount requirement.
 
 **Requirements:**
 - Order `amount` must be >= 100
+
+### IsVIP Guard
+Checks if the customer is a VIP customer.
+
+**Requirements:**
+- Order `is_vip` attribute must be `true`
+
+### IsUrgent Guard
+Checks if the order is marked as urgent.
+
+**Requirements:**
+- Order `is_urgent` attribute must be `true`
+
+### IsBlacklisted Guard
+Checks if the customer is blacklisted.
+
+**Requirements:**
+- Order `customer_blacklisted` attribute must be `true`
+
+### IsCustomer Guard
+Validates that the current user is the customer who placed the order.
+
+**Requirements:**
+- User must be authenticated
+- User ID must match order's `customer_id`
+
+### IsProcessing Guard
+Checks if the order is currently being processed.
+
+**Requirements:**
+- Order `processing_started_at` must not be null
+- Order `processing_completed_at` must be null
 
 ## Actions
 

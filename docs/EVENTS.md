@@ -98,6 +98,53 @@ class OrderStateTransitionListener
 }
 ```
 
+## Guard Expressions in Events
+
+When using guard expressions, the event properties contain serialized information about the complex guard logic:
+
+```php
+Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
+    // For simple guards
+    if (is_string($event->guard)) {
+        Log::info("Guard: {$event->guard}");
+    }
+    
+    // For guard expressions
+    if (is_array($event->guard)) {
+        Log::info("Guard Expression: " . json_encode($event->guard));
+        // Example output: {"and":["IsManager","HasMinimumAmount"]}
+    }
+});
+```
+
+### Guard Expression Event Examples
+
+```php
+// AND expression event
+Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
+    if (is_array($event->guard) && isset($event->guard['and'])) {
+        $guards = $event->guard['and'];
+        Log::info("All guards passed: " . implode(', ', $guards));
+    }
+});
+
+// OR expression event  
+Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
+    if (is_array($event->guard) && isset($event->guard['or'])) {
+        $guards = $event->guard['or'];
+        Log::info("One of these guards passed: " . implode(', ', $guards));
+    }
+});
+
+// NOT expression event
+Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
+    if (is_array($event->guard) && isset($event->guard['not'])) {
+        $guard = $event->guard['not'];
+        Log::info("Guard was false (inverted): {$guard}");
+    }
+});
+```
+
 ### Using Closures
 
 ```php
@@ -127,7 +174,8 @@ Event::listen(StateTransitioned::class, function (StateTransitioned $event) {
         'old_values' => ['state' => $event->from],
         'new_values' => ['state' => $event->to],
         'user_id' => auth()->id(),
-        'guard' => $event->guard,
+        'guard' => is_array($event->guard) ? json_encode($event->guard) : $event->guard,
+        'guard_type' => is_array($event->guard) ? 'expression' : 'simple',
         'action_class' => $event->action,
     ]);
 });

@@ -8,7 +8,7 @@ Define entity workflows declaratively (YAML or PHP), and control transitions wit
 ## 🚀 Features
 
 - 🔁 **Declarative state machines** for Eloquent models
-- 🛡️ **Guard conditions** to validate transitions
+- 🛡️ **Guard conditions** with AND/OR/NOT logic expressions
 - ⚙️ **Lifecycle actions** on transitions
 - 📦 **Auto-generated methods** like `canPublish()` and `publish()`
 - 🧪 **Built-in test support** for transitions
@@ -17,6 +17,7 @@ Define entity workflows declaratively (YAML or PHP), and control transitions wit
 - ⚙️ **Artisan generators** for YAML definitions and PHP classes
 - 🔧 **Configurable** paths, events, and history tracking
 - 🎯 **Dynamic resolution** of guards and actions via Laravel container
+- 🧩 **Complex guard expressions** with nested conditional logic
 - 📝 **Comprehensive documentation** and examples
 
 ---
@@ -70,6 +71,57 @@ state_machine:
       to: rejected
       action: refundCustomer
 ```
+
+## 🧩 Guard Expressions
+
+Laravel Statecraft supports powerful guard expressions with AND/OR/NOT logic for complex business rules:
+
+### AND Logic - All conditions must be true
+```yaml
+- from: pending
+  to: approved
+  guard:
+    and:
+      - IsManager
+      - HasMinimumAmount
+```
+
+### OR Logic - At least one condition must be true
+```yaml
+- from: pending
+  to: approved
+  guard:
+    or:
+      - IsManager
+      - IsVIP
+```
+
+### NOT Logic - Condition must be false
+```yaml
+- from: pending
+  to: approved
+  guard:
+    not: IsBlacklisted
+```
+
+### Nested Expressions - Complex combinations
+```yaml
+- from: pending
+  to: approved
+  guard:
+    and:
+      - IsManager
+      - or:
+          - IsVIP
+          - IsUrgent
+```
+
+**Key Features:**
+- 🔄 **Backward Compatible** - Simple string guards still work
+- 🎯 **Dynamic Evaluation** - Guards resolved at runtime
+- 🧩 **Nested Logic** - Complex business rules supported
+- 📊 **Event Integration** - Expressions serialized in events and history
+- ⚡ **Boolean Logic** - AND/OR/NOT operations with short-circuit evaluation
 
 ---
 
@@ -218,6 +270,26 @@ StateMachineTester::assertCanExecuteMethod($order, 'approve');
 StateMachineTester::assertCannotExecuteMethod($order, 'reject');
 ```
 
+### Testing Guard Expressions
+
+```php
+// Test complex guard expressions
+$tester = new StateMachineTester($order);
+$tester->mockGuard('IsManager', true)
+       ->mockGuard('HasMinimumAmount', false)
+       ->mockGuard('IsVIP', true);
+
+// Test AND logic: (IsManager AND HasMinimumAmount) = (true AND false) = false
+$tester->assertCannotTransition('approved');
+
+// Test OR logic: (IsManager OR IsVIP) = (true OR true) = true
+$tester->assertCanTransition('approved');
+
+// Test NOT logic: NOT IsBlacklisted = NOT false = true
+$tester->mockGuard('IsBlacklisted', false);
+$tester->assertCanTransition('approved');
+```
+
 ## 🔔 Events
 
 Laravel Statecraft dispatches events during transitions:
@@ -250,6 +322,7 @@ For comprehensive documentation, examples, and advanced usage:
 
 - **[Commands](docs/COMMANDS.md)** - Artisan command reference
 - **[Guards and Actions](docs/GUARDS_AND_ACTIONS.md)** - Dynamic guards and actions
+- **[Guard Expressions](GUARD_EXPRESSIONS.md)** - AND/OR/NOT logic for guards
 - **[Configuration](docs/CONFIGURATION.md)** - Configuration options
 - **[Events](docs/EVENTS.md)** - Event system usage
 - **[Testing](docs/TESTING.md)** - Testing utilities
@@ -259,9 +332,10 @@ For comprehensive documentation, examples, and advanced usage:
 ## 🎯 Next Steps
 
 1. **Quick Start**: Check out the [OrderWorkflow example](examples/OrderWorkflow/)
-2. **Advanced Usage**: Read the [Guards and Actions documentation](docs/GUARDS_AND_ACTIONS.md)
-3. **Configuration**: Review the [Configuration guide](docs/CONFIGURATION.md)
-4. **Testing**: Learn about [Testing utilities](docs/TESTING.md)
+2. **Guard Expressions**: See [guard-expressions-workflow.yaml](examples/OrderWorkflow/guard-expressions-workflow.yaml) for comprehensive examples
+3. **Advanced Usage**: Read the [Guards and Actions documentation](docs/GUARDS_AND_ACTIONS.md)
+4. **Configuration**: Review the [Configuration guide](docs/CONFIGURATION.md)
+5. **Testing**: Learn about [Testing utilities](docs/TESTING.md)
 
 ---
 
