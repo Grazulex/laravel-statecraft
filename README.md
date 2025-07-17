@@ -121,6 +121,7 @@ Laravel Statecraft supports powerful guard expressions with AND/OR/NOT logic for
 - 🎯 **Dynamic Evaluation** - Guards resolved at runtime
 - 🧩 **Nested Logic** - Complex business rules supported
 - 📊 **Event Integration** - Expressions serialized in events and history
+- ⚡ **Boolean Logic** - AND/OR/NOT operations with short-circuit evaluation
 
 ---
 
@@ -331,9 +332,10 @@ For comprehensive documentation, examples, and advanced usage:
 ## 🎯 Next Steps
 
 1. **Quick Start**: Check out the [OrderWorkflow example](examples/OrderWorkflow/)
-2. **Advanced Usage**: Read the [Guards and Actions documentation](docs/GUARDS_AND_ACTIONS.md)
-3. **Configuration**: Review the [Configuration guide](docs/CONFIGURATION.md)
-4. **Testing**: Learn about [Testing utilities](docs/TESTING.md)
+2. **Guard Expressions**: See [guard-expressions-workflow.yaml](examples/OrderWorkflow/guard-expressions-workflow.yaml) for comprehensive examples
+3. **Advanced Usage**: Read the [Guards and Actions documentation](docs/GUARDS_AND_ACTIONS.md)
+4. **Configuration**: Review the [Configuration guide](docs/CONFIGURATION.md)
+5. **Testing**: Learn about [Testing utilities](docs/TESTING.md)
 
 ---
 
