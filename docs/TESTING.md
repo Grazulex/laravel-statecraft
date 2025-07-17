@@ -148,6 +148,186 @@ class OrderGuardTest extends TestCase
 }
 ```
 
+### Testing Guard Expressions
+
+Laravel Statecraft provides powerful utilities for testing complex guard expressions with AND/OR/NOT logic:
+
+```php
+class OrderGuardExpressionTest extends TestCase
+{
+    public function test_and_logic_requires_all_conditions(): void
+    {
+        $order = Order::factory()->create([
+            'status' => 'pending',
+            'amount' => 1000,
+            'customer_blacklisted' => false,
+        ]);
+        
+        $user = User::factory()->create(['is_manager' => true]);
+        $this->actingAs($user);
+        
+        // Test AND expression: IsManager AND HasMinimumAmount
+        $tester = new StateMachineTester($order);
+        $tester->mockGuard('IsManager', true)
+               ->mockGuard('HasMinimumAmount', true);
+        
+        $tester->assertCanTransition('approved');
+        
+        // Make one condition false
+        $tester->mockGuard('IsManager', false);
+        $tester->assertCannotTransition('approved');
+    }
+    
+    public function test_or_logic_requires_at_least_one_condition(): void
+    {
+        $order = Order::factory()->create(['status' => 'pending']);
+        
+        // Test OR expression: IsManager OR IsVIP
+        $tester = new StateMachineTester($order);
+        $tester->mockGuard('IsManager', false)
+               ->mockGuard('IsVIP', true);
+        
+        $tester->assertCanTransition('approved');
+        
+        // Make both conditions false
+        $tester->mockGuard('IsVIP', false);
+        $tester->assertCannotTransition('approved');
+    }
+    
+    public function test_not_logic_requires_condition_to_be_false(): void
+    {
+        $order = Order::factory()->create(['status' => 'pending']);
+        
+        // Test NOT expression: NOT IsBlacklisted
+        $tester = new StateMachineTester($order);
+        $tester->mockGuard('IsBlacklisted', false);
+        
+        $tester->assertCanTransition('approved');
+        
+        // Make condition true (blacklisted)
+        $tester->mockGuard('IsBlacklisted', true);
+        $tester->assertCannotTransition('approved');
+    }
+    
+    public function test_nested_expressions(): void
+    {
+        $order = Order::factory()->create(['status' => 'pending']);
+        
+        // Test nested expression: IsManager AND (IsVIP OR IsUrgent)
+        $tester = new StateMachineTester($order);
+        $tester->mockGuard('IsManager', true)
+               ->mockGuard('IsVIP', false)
+               ->mockGuard('IsUrgent', true);
+        
+        // IsManager = true AND (IsVIP = false OR IsUrgent = true)
+        // = true AND (false OR true) = true AND true = true
+        $tester->assertCanTransition('approved');
+        
+        // Make nested OR condition false
+        $tester->mockGuard('IsUrgent', false);
+        // IsManager = true AND (IsVIP = false OR IsUrgent = false)
+        // = true AND (false OR false) = true AND false = false
+        $tester->assertCannotTransition('approved');
+    }
+    
+    public function test_complex_real_world_scenario(): void
+    {
+        $order = Order::factory()->create([
+            'status' => 'pending',
+            'amount' => 1000,
+            'customer_blacklisted' => false,
+            'is_vip' => false,
+            'is_urgent' => false,
+        ]);
+        
+        // Complex expression: (IsManager AND HasMinimumAmount) OR (IsVIP AND NOT IsBlacklisted)
+        $tester = new StateMachineTester($order);
+        
+        // Scenario 1: Manager with sufficient amount
+        $tester->mockGuard('IsManager', true)
+               ->mockGuard('HasMinimumAmount', true)
+               ->mockGuard('IsVIP', false)
+               ->mockGuard('IsBlacklisted', false);
+        
+        $tester->assertCanTransition('approved');
+        
+        // Scenario 2: VIP customer not blacklisted
+        $tester->mockGuard('IsManager', false)
+               ->mockGuard('HasMinimumAmount', false)
+               ->mockGuard('IsVIP', true)
+               ->mockGuard('IsBlacklisted', false);
+        
+        $tester->assertCanTransition('approved');
+        
+        // Scenario 3: VIP customer but blacklisted
+        $tester->mockGuard('IsBlacklisted', true);
+        $tester->assertCannotTransition('approved');
+        
+        // Scenario 4: Neither condition met
+        $tester->mockGuard('IsManager', false)
+               ->mockGuard('IsVIP', false)
+               ->mockGuard('IsBlacklisted', false);
+        
+        $tester->assertCannotTransition('approved');
+    }
+}
+```
+
+### Mock Guard Helpers
+
+The `StateMachineTester` provides convenient methods for mocking guard results:
+
+```php
+$tester = new StateMachineTester($model);
+
+// Mock individual guards
+$tester->mockGuard('IsManager', true);
+$tester->mockGuard('HasMinimumAmount', false);
+
+// Chain multiple mocks
+$tester->mockGuard('IsManager', true)
+       ->mockGuard('HasMinimumAmount', true)
+       ->mockGuard('IsVIP', false);
+
+// Mock with callback for dynamic behavior
+$tester->mockGuard('IsManager', function($model, $from, $to) {
+    return $model->user_role === 'manager';
+});
+
+// Clear all mocks
+$tester->clearMocks();
+```
+
+### Testing Performance
+
+Guard expressions are optimized for performance with short-circuit evaluation:
+
+```php
+public function test_guard_expression_performance(): void
+{
+    $order = Order::factory()->create(['status' => 'pending']);
+    
+    // AND expressions short-circuit on first false
+    $tester = new StateMachineTester($order);
+    $tester->mockGuard('FirstGuard', false);
+    $tester->mockGuard('SecondGuard', function() {
+        throw new Exception('Should not be called');
+    });
+    
+    // This should not throw an exception because FirstGuard is false
+    $tester->assertCannotTransition('approved');
+    
+    // OR expressions short-circuit on first true
+    $tester->mockGuard('FirstGuard', true);
+    $tester->mockGuard('SecondGuard', function() {
+        throw new Exception('Should not be called');
+    });
+    
+    // This should not throw an exception because FirstGuard is true
+    $tester->assertCanTransition('approved');
+}
+```
+
 ### Testing Actions
 
 ```php

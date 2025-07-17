@@ -51,6 +51,58 @@ An example focusing on:
 
 **Features**: Comprehensive event handling patterns
 
+## 🧩 Guard Expressions
+
+All examples now support powerful guard expressions with AND/OR/NOT logic for complex business rules:
+
+### AND Logic - All conditions must be true
+```yaml
+- from: pending
+  to: approved
+  guard:
+    and:
+      - IsManager
+      - HasMinimumAmount
+```
+
+### OR Logic - At least one condition must be true
+```yaml
+- from: pending
+  to: approved
+  guard:
+    or:
+      - IsManager
+      - IsVIP
+```
+
+### NOT Logic - Condition must be false
+```yaml
+- from: pending
+  to: approved
+  guard:
+    not: IsBlacklisted
+```
+
+### Nested Expressions - Complex combinations
+```yaml
+- from: pending
+  to: approved
+  guard:
+    and:
+      - IsManager
+      - or:
+          - IsVIP
+          - IsUrgent
+```
+
+**Key Features:**
+- 🔄 **Backward Compatible** - Simple string guards still work
+- 🎯 **Dynamic Evaluation** - Guards resolved at runtime
+- 🧩 **Nested Logic** - Complex business rules supported
+- 📊 **Event Integration** - Expressions serialized in events and history
+
+See `examples/OrderWorkflow/guard-expressions-workflow.yaml` for comprehensive examples.
+
 ### 5. More Examples Coming Soon
 
 Additional examples are planned to demonstrate:
@@ -71,6 +123,7 @@ Each example is self-contained and can be used as a starting point:
 cp -r examples/OrderWorkflow/Guards app/Guards/
 cp -r examples/OrderWorkflow/Actions app/Actions/
 cp examples/OrderWorkflow/advanced-order-workflow.yaml database/state_machines/
+cp examples/OrderWorkflow/guard-expressions-workflow.yaml database/state_machines/
 ```
 
 ### 2. Set Up Your Model
