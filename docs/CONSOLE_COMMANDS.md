@@ -37,12 +37,12 @@ php artisan statecraft:show order
 php artisan statecraft:show order --raw
 
 # Use custom directory
-php artisan statecraft:show order --path=/path/to/statemachines
+php artisan statecraft:show order --path=/path/to/state_machines
 ```
 
 **Output:**
 ```
-State Machine Definition: resources/statemachines/order.yaml
+State Machine Definition: database/state_machines/order.yaml
 
 Basic Information:
   Name: OrderWorkflow
@@ -86,7 +86,7 @@ php artisan statecraft:export order md
 php artisan statecraft:export order json --output=/path/to/output.json
 
 # Use custom directory
-php artisan statecraft:export order json --path=/path/to/statemachines
+php artisan statecraft:export order json --path=/path/to/state_machines
 ```
 
 #### Supported Formats
@@ -151,7 +151,7 @@ php artisan statecraft:validate order
 php artisan statecraft:validate --all
 
 # Use custom directory
-php artisan statecraft:validate order --path=/path/to/statemachines
+php artisan statecraft:validate order --path=/path/to/state_machines
 ```
 
 **Output:**
@@ -241,14 +241,11 @@ The commands use the following configuration in `config/statecraft.php`:
 
 ```php
 return [
-    // Default path for YAML definitions
-    'definitions_path' => resource_path('statemachines'),
-    
-    // Default path for generated code
-    'generated_code_path' => app_path('StateMachines'),
-    
-    // Path for state machine definitions
+    // Path for YAML state machine definitions  
     'state_machines_path' => database_path('state_machines'),
+    
+    // Path for generated PHP classes
+    'generated_code_path' => app_path('StateMachines'),
 ];
 ```
 
@@ -287,7 +284,7 @@ php artisan statecraft:validate --all
 
 ```bash
 # Export all workflows to Markdown
-for file in resources/statemachines/*.yaml; do
+for file in database/state_machines/*.yaml; do
     name=$(basename "$file" .yaml)
     php artisan statecraft:export "$name" md --output="docs/$name-workflow.md"
 done

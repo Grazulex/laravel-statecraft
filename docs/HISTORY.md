@@ -33,15 +33,15 @@ Schema::create('state_machine_history', function (Blueprint $table) {
     $table->id();
     $table->morphs('model');
     $table->string('state_machine');
-    $table->string('transition');
-    $table->string('from_state');
+    $table->string('transition')->nullable();
+    $table->string('from_state')->nullable();
     $table->string('to_state');
+    $table->string('guard')->nullable();
+    $table->string('action')->nullable();
     $table->json('metadata')->nullable();
     $table->timestamps();
     
-    $table->index(['model_type', 'model_id']);
-    $table->index('state_machine');
-    $table->index(['from_state', 'to_state']);
+    $table->index('created_at');
 });
 ```
 
@@ -81,6 +81,8 @@ foreach ($history as $transition) {
     echo "Transition: {$transition->from_state} → {$transition->to_state}";
     echo "Via: {$transition->transition}";
     echo "Machine: {$transition->state_machine}";
+    echo "Guard: {$transition->guard}";
+    echo "Action: {$transition->action}";
     echo "Date: {$transition->created_at}";
     
     if ($transition->metadata) {

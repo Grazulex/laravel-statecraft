@@ -162,8 +162,8 @@ Each example is self-contained and can be used as a starting point:
 
 ```bash
 # Copy example files to your project
-cp -r examples/OrderWorkflow/Guards app/Guards/
-cp -r examples/OrderWorkflow/Actions app/Actions/
+cp -r examples/OrderWorkflow/Guards app/StateMachines/Guards/
+cp -r examples/OrderWorkflow/Actions app/StateMachines/Actions/
 cp examples/OrderWorkflow/advanced-order-workflow.yaml database/state_machines/
 cp examples/OrderWorkflow/guard-expressions-workflow.yaml database/state_machines/
 ```
