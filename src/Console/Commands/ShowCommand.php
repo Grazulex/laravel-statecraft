@@ -19,7 +19,7 @@ class ShowCommand extends Command
     public function handle(): void
     {
         $filename = $this->argument('file');
-        $path = $this->option('path') ?? config('statecraft.definitions_path', resource_path('statemachines'));
+        $path = $this->option('path') ?? config('statecraft.state_machines_path', database_path('state_machines'));
         $showRaw = $this->option('raw');
 
         // Add .yaml extension if not present

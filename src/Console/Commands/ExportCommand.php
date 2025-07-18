@@ -20,7 +20,7 @@ class ExportCommand extends Command
     {
         $filename = $this->argument('file');
         $format = $this->argument('format');
-        $path = $this->option('path') ?? config('statecraft.definitions_path', resource_path('statemachines'));
+        $path = $this->option('path') ?? config('statecraft.state_machines_path', database_path('state_machines'));
         $outputPath = $this->option('output');
 
         // Add .yaml extension if not present

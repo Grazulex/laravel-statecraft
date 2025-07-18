@@ -9,21 +9,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | The path where your state machine YAML definitions are stored.
-    | This can be an absolute path or relative to your Laravel base path.
+    | This is used by commands that manage YAML files (make, list, show, export, validate)
+    | and the YAML loader. Can be an absolute path or relative to your Laravel base path.
     |
     */
     'state_machines_path' => database_path('state_machines'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Definitions Path
-    |--------------------------------------------------------------------------
-    |
-    | The path where your state machine YAML definitions are stored.
-    | Used by list, show, export and validate commands.
-    |
-    */
-    'definitions_path' => resource_path('statemachines'),
 
     /*
     |--------------------------------------------------------------------------
