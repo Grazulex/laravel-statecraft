@@ -45,6 +45,12 @@
 
 ## <span style="color: #D2D200;">📦 Installation</span>
 
+Install via Composer:
+
+```bash
+composer require grazulex/laravel-statecraft
+```
+
 ### Configuration (Optional)
 
 <div style="border-left: 5px solid #88C600; padding-left: 20px; background: rgba(136, 198, 0, 0.1); margin: 15px 0;">
