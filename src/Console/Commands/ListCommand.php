@@ -17,7 +17,7 @@ class ListCommand extends Command
 
     public function handle(): void
     {
-        $path = $this->option('path') ?? config('statecraft.definitions_path', resource_path('statemachines'));
+        $path = $this->option('path') ?? config('statecraft.state_machines_path', database_path('state_machines'));
 
         if (! File::isDirectory($path)) {
             $this->error("Directory not found: {$path}");
