@@ -1,7 +1,7 @@
 # Laravel Statecraft
 
 <div align="center">
-  <img src="logo2.png" alt="Laravel Statecraft" width="100">
+  <img src="new_logo.png" alt="Laravel Statecraft" width="100">
   <p><strong>Elegant and testable state machines for Laravel applications — Define entity workflows declaratively (YAML), and control transitions with guards, actions, and events.</strong></p>
   
   [![Latest Version](https://img.shields.io/packagist/v/grazulex/laravel-statecraft)](https://packagist.org/packages/grazulex/laravel-statecraft)
