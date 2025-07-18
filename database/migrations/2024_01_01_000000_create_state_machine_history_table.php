@@ -22,7 +22,6 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
 
-            $table->index(['model_type', 'model_id']);
             $table->index('created_at');
         });
     }
