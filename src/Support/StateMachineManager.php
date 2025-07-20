@@ -144,7 +144,17 @@ final class StateMachineManager
      */
     private function resolveGuard(string $guardClass): Guard
     {
-        $guard = app($guardClass);
+        // Essayer d'abord le nom tel quel, puis avec le namespace par défaut si ça échoue
+        try {
+            $guard = app($guardClass);
+        } catch (\Illuminate\Contracts\Container\BindingResolutionException $e) {
+            if (! str_contains($guardClass, '\\')) {
+                $guardClass = 'App\\StateMachines\\Guards\\'.$guardClass;
+                $guard = app($guardClass);
+            } else {
+                throw $e;
+            }
+        }
 
         if (! $guard instanceof Guard) {
             throw new InvalidTransitionException("Guard {$guardClass} must implement Guard interface");
@@ -158,7 +168,17 @@ final class StateMachineManager
      */
     private function resolveAction(string $actionClass): Action
     {
-        $action = app($actionClass);
+        // Essayer d'abord le nom tel quel, puis avec le namespace par défaut si ça échoue
+        try {
+            $action = app($actionClass);
+        } catch (\Illuminate\Contracts\Container\BindingResolutionException $e) {
+            if (! str_contains($actionClass, '\\')) {
+                $actionClass = 'App\\StateMachines\\Actions\\'.$actionClass;
+                $action = app($actionClass);
+            } else {
+                throw $e;
+            }
+        }
 
         if (! $action instanceof Action) {
             throw new InvalidTransitionException("Action {$actionClass} must implement Action interface");

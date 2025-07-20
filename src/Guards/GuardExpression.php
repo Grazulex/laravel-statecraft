@@ -91,14 +91,25 @@ class GuardExpression
 
         // Si c'est une string, c'est une classe Guard
         if (is_string($guard)) {
+            // Essayer d'abord le nom tel quel, puis avec le namespace par défaut si ça échoue
+            $guardClass = $guard;
             try {
-                $guardInstance = app($guard);
+                $guardInstance = app($guardClass);
             } catch (\Illuminate\Contracts\Container\BindingResolutionException $e) {
-                throw new InvalidArgumentException("Guard class {$guard} could not be resolved: ".$e->getMessage(), $e->getCode(), $e);
+                if (! str_contains($guardClass, '\\')) {
+                    $guardClass = 'App\\StateMachines\\Guards\\'.$guardClass;
+                    try {
+                        $guardInstance = app($guardClass);
+                    } catch (\Illuminate\Contracts\Container\BindingResolutionException $e2) {
+                        throw new InvalidArgumentException("Guard class {$guard} could not be resolved: ".$e->getMessage(), $e->getCode(), $e);
+                    }
+                } else {
+                    throw new InvalidArgumentException("Guard class {$guardClass} could not be resolved: ".$e->getMessage(), $e->getCode(), $e);
+                }
             }
 
             if (! $guardInstance instanceof Guard) {
-                throw new InvalidArgumentException("Guard {$guard} must implement Guard interface");
+                throw new InvalidArgumentException("Guard {$guardClass} must implement Guard interface");
             }
 
             return $guardInstance->check($model, $this->from, $this->to);
