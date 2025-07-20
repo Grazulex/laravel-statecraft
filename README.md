@@ -1,512 +1,402 @@
 # Laravel Statecraft
 
-<div align="center">
-  <img src="new_logo.png" alt="Laravel Statecraft" width="100">
-  <p><strong>Elegant and testable state machines for Laravel applications — Define entity workflows declaratively (YAML), and control transitions with guards, actions, and events.</strong></p>
-  
-  [![Latest Version](https://img.shields.io/packagist/v/grazulex/laravel-statecraft)](https://packagist.org/packages/grazulex/laravel-statecraft)
-  [![Total Downloads](https://img.shields.io/packagist/dt/grazulex/laravel-statecraft)](https://packagist.org/packages/grazulex/laravel-statecraft)
-  [![License](https://img.shields.io/github/license/grazulex/laravel-statecraft)](LICENSE.md)
-  [![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://php.net)
-  [![Laravel Version](https://img.shields.io/badge/laravel-%5E12.19-red)](https://laravel.com)
-  [![Tests](https://github.com/Grazulex/laravel-statecraft/workflows/Tests/badge.svg)](https://github.com/Grazulex/laravel-statecraft/actions)
-  [![Code Style](https://img.shields.io/badge/code%20style-pint-orange)](https://github.com/laravel/pint)
-</div>
+<img src="new_logo.png" alt="Laravel Statecraft" width="200">
 
-## Overview
+Advanced State Machine implementation for Laravel applications. Declarative state management with support for conditions, actions, and complex workflows through YAML configuration.
 
-<div style="background: linear-gradient(135deg, #FF9900 0%, #D2D200 25%, #88C600 50%, #00B470 75%, #FF9900 100%); border-radius: 15px; padding: 30px; margin: 20px 0; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
+[![Latest Version](https://img.shields.io/packagist/v/grazulex/laravel-statecraft.svg?style=flat-square)](https://packagist.org/packages/grazulex/laravel-statecraft)
+[![Total Downloads](https://img.shields.io/packagist/dt/grazulex/laravel-statecraft.svg?style=flat-square)](https://packagist.org/packages/grazulex/laravel-statecraft)
+[![License](https://img.shields.io/github/license/grazulex/laravel-statecraft.svg?style=flat-square)](https://github.com/Grazulex/laravel-statecraft/blob/main/LICENSE.md)
+[![PHP Version](https://img.shields.io/packagist/php-v/grazulex/laravel-statecraft.svg?style=flat-square)](https://php.net/)
+[![Laravel Version](https://img.shields.io/badge/laravel-12.x-ff2d20?style=flat-square&logo=laravel)](https://laravel.com/)
+[![Tests](https://img.shields.io/github/actions/workflow/status/grazulex/laravel-statecraft/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/Grazulex/laravel-statecraft/actions)
+[![Code Style](https://img.shields.io/badge/code%20style-pint-000000?style=flat-square&logo=laravel)](https://github.com/laravel/pint)
 
-**Laravel Statecraft** est la solution élégante pour gérer les **<span style="color: #FFE066;">machines d'état</span>** dans vos applications Laravel. Définissez vos workflows de manière **<span style="color: #B3FF66;">déclarative</span>** avec YAML, contrôlez les transitions avec des **<span style="color: #66FFB3;">guards</span>**, des **<span style="color: #66E6FF;">actions</span>**, et des **<span style="color: #FFB366;">événements</span>**.
+## 📖 Table of Contents
 
-✨ **Parfait pour** : workflows de commandes, validation de contenu, gestion d'utilisateurs, processus d'approbation
-🚀 **Simplicité** : Configuration YAML intuitive + méthodes auto-générées  
-🔧 **Flexibilité** : Guards complexes, actions personnalisées, historique des transitions
-
-</div>
-
-## Table of Contents
-
-- [🚀 Features](#-features)
+- [Overview](#overview)
+- [✨ Features](#-features)
 - [📦 Installation](#-installation)
-- [✨ Example: Order Workflow](#-example-order-workflow)
-- [🧩 Guard Expressions](#-guard-expressions)
-- [⚙️ Custom Guard](#-custom-guard)
-- [🔍 Custom Action](#-custom-action)
-- [📜 Transition History](#-transition-history-optional)
-- [✅ Artisan Commands](#-artisan-commands)
-- [🧪 Testing](#-testing)
-- [🔔 Events](#-events)
+- [🚀 Quick Start](#-quick-start)
+- [🔄 State Transitions](#-state-transitions)
+- [🎯 Guards & Actions](#-guards--actions)
+- [📋 YAML Configuration](#-yaml-configuration)
+- [⚙️ Configuration](#️-configuration)
 - [📚 Documentation](#-documentation)
-- [🎯 Next Steps](#-next-steps)
+- [💡 Examples](#-examples)
+- [🧪 Testing](#-testing)
+- [🔧 Requirements](#-requirements)
+- [🚀 Performance](#-performance)
 - [🤝 Contributing](#-contributing)
 - [🔒 Security](#-security)
 - [📄 License](#-license)
 
-## <span style="color: #FF9900;">🚀 Features</span>
+## Overview
 
-- 🔁 **<span style="color: #D2D200;">Declarative state machines</span>** for Eloquent models
-- 🛡️ **<span style="color: #88C600;">Guard conditions</span>** with AND/OR/NOT logic expressions
-- ⚙️ **<span style="color: #00B470;">Lifecycle actions</span>** on transitions
-- 📦 **<span style="color: #FF9900;">Auto-generated methods</span>** like `canPublish()` and `publish()`
-- 🧪 **<span style="color: #D2D200;">Built-in test support</span>** for transitions
-- 🔔 **<span style="color: #88C600;">Laravel event support</span>** (`Transitioning`, `Transitioned`)
-- 🧾 **<span style="color: #00B470;">Optional transition history tracking</span>**
-- ⚙️ **<span style="color: #FF9900;">Comprehensive Artisan commands</span>** for YAML definitions and PHP classes
-- 🔧 **<span style="color: #D2D200;">Configurable</span>** paths, events, and history tracking
-- 🎯 **<span style="color: #88C600;">Dynamic resolution</span>** of guards and actions via Laravel container
-- 🧩 **<span style="color: #00B470;">Complex guard expressions</span>** with nested conditional logic
-- 📊 **<span style="color: #FF9900;">Export capabilities</span>** (JSON, Mermaid, Markdown)
-- ✅ **<span style="color: #D2D200;">Validation system</span>** for YAML definitions
-- 📝 **<span style="color: #88C600;">Comprehensive documentation</span>** and examples
+Laravel Statecraft is a powerful state machine implementation for Laravel that provides declarative state management through YAML configuration. Build complex workflows with conditional transitions, guards, actions, and comprehensive state tracking.
 
-## <span style="color: #D2D200;">📦 Installation</span>
+**Perfect for order processing, user workflows, approval systems, and any application requiring sophisticated state management.**
 
-Install via Composer:
+### 🎯 Use Cases
+
+Laravel Statecraft is perfect for:
+
+- **Order Processing** - Complex e-commerce order workflows
+- **User Registration** - Multi-step user onboarding flows
+- **Approval Systems** - Document or request approval workflows  
+- **Content Management** - Publishing and moderation workflows
+- **Business Processes** - Any multi-state business logic
+
+## ✨ Features
+
+- 🚀 **Declarative Configuration** - Define state machines in YAML files
+- 🔄 **Flexible Transitions** - Conditional transitions with guards and actions
+- 🎯 **Event System** - Built-in events for state changes and transitions
+- 📊 **State History** - Track all state changes with timestamps
+- 🛡️ **Guards & Actions** - Pre/post transition validation and processing
+- 🔗 **Model Integration** - Seamless Eloquent model integration
+- 📋 **YAML Support** - Human-readable state machine definitions
+- 🎨 **Artisan Commands** - CLI tools for state machine management
+- ✅ **Validation** - Comprehensive state machine validation
+- 📈 **Visualization** - Export state machines to Mermaid diagrams
+- 🧪 **Test-Friendly** - Built-in testing utilities
+- ⚡ **Performance** - Optimized for speed with caching support
+
+## 📦 Installation
+
+Install the package via Composer:
 
 ```bash
 composer require grazulex/laravel-statecraft
 ```
 
-### Configuration (Optional)
+> **💡 Auto-Discovery**  
+> The service provider will be automatically registered thanks to Laravel's package auto-discovery.
 
-<div style="border-left: 5px solid #88C600; padding-left: 20px; background: rgba(136, 198, 0, 0.1); margin: 15px 0;">
-
-Publish the configuration file and migrations:
+Publish configuration:
 
 ```bash
-# Publish configuration
 php artisan vendor:publish --tag=statecraft-config
+```
 
-# Publish migrations (if using history tracking)
+Publish migrations (if using history tracking):
+
+```bash
 php artisan vendor:publish --tag=statecraft-migrations
 php artisan migrate
 ```
 
-The configuration file will be published to `config/statecraft.php` where you can customize:
-- **<span style="color: #FF9900;">State machine definitions path</span>**
-- **<span style="color: #D2D200;">Default state field name</span>**
-- **<span style="color: #88C600;">Event system settings</span>**
-- **<span style="color: #00B470;">History tracking options</span>**
+## 🚀 Quick Start
 
-</div>
+### 1. Create a State Machine Definition
 
-## <span style="color: #88C600;">✨ Example: Order Workflow</span>
-
-**<span style="color: #FF9900;">YAML Definition</span>**
-
-<div style="border-left: 5px solid #D2D200; padding-left: 20px; background: rgba(210, 210, 0, 0.1); margin: 15px 0;">
-
-```yaml
-state_machine:
-  name: OrderWorkflow
-  model: App\Models\Order
-  states: [draft, pending, approved, rejected]
-  initial: draft
-  transitions:
-    - from: draft
-      to: pending
-      guard: canSubmit
-      action: notifyReviewer
-    - from: pending
-      to: approved
-      guard: isManager
-    - from: pending
-      to: rejected
-      action: refundCustomer
+```bash
+php artisan statecraft:make OrderStateMachine --model=Order
 ```
 
-</div>
-
-## <span style="color: #00B470;">🧩 Guard Expressions</span>
-
-### AND Logic - All conditions must be true
-<div style="border-left: 5px solid #FF9900; padding-left: 20px; background: rgba(255, 153, 0, 0.1); margin: 15px 0;">
+### 2. Define Your State Machine in YAML
 
 ```yaml
-- from: pending
-  to: approved
-  guard:
-    and:
-      - IsManager
-      - HasMinimumAmount
+# state-machines/OrderStateMachine.yaml
+name: OrderStateMachine
+model: App\Models\Order
+initial_state: pending
+
+states:
+  - name: pending
+    description: Order is pending payment
+  - name: paid
+    description: Order has been paid
+  - name: processing
+    description: Order is being processed
+  - name: shipped
+    description: Order has been shipped
+  - name: delivered
+    description: Order has been delivered
+  - name: cancelled
+    description: Order was cancelled
+
+transitions:
+  - name: pay
+    from: pending
+    to: paid
+    guard: PaymentGuard
+    action: ProcessPayment
+  
+  - name: process
+    from: paid
+    to: processing
+    action: StartProcessing
+  
+  - name: ship
+    from: processing
+    to: shipped
+    guard: InventoryGuard
+    action: CreateShipment
 ```
 
-</div>
-
-### OR Logic - At least one condition must be true
-<div style="border-left: 5px solid #D2D200; padding-left: 20px; background: rgba(210, 210, 0, 0.1); margin: 15px 0;">
-
-```yaml
-- from: pending
-  to: approved
-  guard:
-    or:
-      - IsManager
-      - IsVIP
-```
-
-</div>
-
-### NOT Logic - Condition must be false
-<div style="border-left: 5px solid #88C600; padding-left: 20px; background: rgba(136, 198, 0, 0.1); margin: 15px 0;">
-
-```yaml
-- from: pending
-  to: approved
-  guard:
-    not: IsBlacklisted
-```
-
-</div>
-
-### Nested Expressions - Complex combinations
-<div style="border-left: 5px solid #00B470; padding-left: 20px; background: rgba(0, 180, 112, 0.1); margin: 15px 0;">
-
-```yaml
-- from: pending
-  to: approved
-  guard:
-    and:
-      - IsManager
-      - or:
-          - IsVIP
-          - IsUrgent
-```
-
-</div>
-
-**<span style="color: #FF9900;">Key Features:</span>**
-- 🔄 **<span style="color: #D2D200;">Backward Compatible</span>** - Simple string guards still work
-- 🎯 **<span style="color: #88C600;">Dynamic Evaluation</span>** - Guards resolved at runtime
-- 🧩 **<span style="color: #00B470;">Nested Logic</span>** - Complex business rules supported
-- 📊 **<span style="color: #FF9900;">Event Integration</span>** - Expressions serialized in events and history
-- ⚡ **<span style="color: #D2D200;">Boolean Logic</span>** - AND/OR/NOT operations with short-circuit evaluation
-
-### Basic Model Setup
-
-<div style="border-left: 5px solid #88C600; padding-left: 20px; background: rgba(136, 198, 0, 0.1); margin: 15px 0;">
-
-Add the trait to your model:
+### 3. Add the Trait to Your Model
 
 ```php
-use Grazulex\LaravelStatecraft\Traits\HasStateMachine;
+use Grazulex\LaravelStatecraft\HasStateMachine;
 
 class Order extends Model
 {
     use HasStateMachine;
     
-    protected function getStateMachineDefinitionName(): string
-    {
-        return 'order-workflow'; // YAML file name
+    protected $stateMachine = 'OrderStateMachine';
+}
+```
+
+### 4. Use State Transitions
+
+```php
+// Create a new order (starts in 'pending' state)
+$order = Order::create(['total' => 100.00]);
+
+// Check current state
+echo $order->currentState(); // 'pending'
+
+// Transition to next state
+$order->transition('pay'); // Moves to 'paid' state
+
+// Check available transitions
+$availableTransitions = $order->availableTransitions();
+
+// Get state history
+$history = $order->stateHistory();
+```
+
+## 🔄 State Transitions
+
+Laravel Statecraft provides flexible transition management:
+
+```php
+// Basic transition
+$order->transition('pay');
+
+// Transition with context data
+$order->transition('ship', ['tracking_number' => 'ABC123']);
+
+// Check if transition is possible
+if ($order->canTransition('process')) {
+    $order->transition('process');
+}
+
+// Bulk state operations
+$orders = Order::inState('pending')->get();
+foreach ($orders as $order) {
+    if ($order->canTransition('pay')) {
+        $order->transition('pay');
     }
 }
 ```
 
-</div>
+## 🎯 Guards & Actions
 
-### Using the State Machine
-
-<div style="border-left: 5px solid #00B470; padding-left: 20px; background: rgba(0, 180, 112, 0.1); margin: 15px 0;">
+### Guards (Pre-transition Validation)
 
 ```php
+use Grazulex\LaravelStatecraft\Contracts\Guard;
+
+class PaymentGuard implements Guard
+{
+    public function passes($model, string $transition, array $context = []): bool
+    {
+        // Check if payment is valid
+        return $model->payment_status === 'completed';
+    }
+    
+    public function message(): string
+    {
+        return 'Payment must be completed before processing order.';
+    }
+}
+```
+
+### Actions (Post-transition Processing)
+
+```php
+use Grazulex\LaravelStatecraft\Contracts\Action;
+
+class ProcessPayment implements Action
+{
+    public function execute($model, string $transition, array $context = []): void
+    {
+        // Process payment logic
+        $model->update([
+            'payment_processed_at' => now(),
+            'payment_id' => $context['payment_id'] ?? null,
+        ]);
+        
+        // Send confirmation email
+        Mail::to($model->user)->send(new PaymentConfirmed($model));
+    }
+}
+```
+
+## 📋 YAML Configuration
+
+Advanced state machine configuration:
+
+```yaml
+# state-machines/AdvancedOrderStateMachine.yaml
+name: AdvancedOrderStateMachine
+model: App\Models\Order
+initial_state: draft
+
+states:
+  - name: draft
+    description: Order being prepared
+  - name: pending_payment
+    description: Waiting for payment
+
+transitions:
+  - name: submit_order
+    from: draft
+    to: pending_payment
+    guard: OrderValidationGuard
+    action: NotifyCustomer
+  
+  - name: process_payment
+    from: pending_payment
+    to: [paid, failed] # Conditional transitions
+    conditions:
+      - condition: "payment.status == 'success'"
+        to: paid
+        action: ProcessSuccessfulPayment
+```
+
+## ⚙️ Configuration
+
+Laravel Statecraft works out of the box, but you can customize it:
+
+```php
+// config/statecraft.php
+return [
+    'state_machines_path' => base_path('state-machines'),
+    'cache_enabled' => true,
+    'history_enabled' => true,
+];
+```
+
+## 📚 Documentation
+
+For detailed documentation, examples, and advanced usage:
+
+- 📚 [Full Documentation](docs/README.md)
+- 🎯 [Examples](examples/README.md)
+- 🔧 [Configuration](docs/configuration.md)
+- 🧪 [Testing](docs/testing.md)
+- 🎨 [Guards & Actions](docs/guards-actions.md)
+
+## 💡 Examples
+
+### Order Processing State Machine
+
+```php
+// Check order state and available actions
 $order = Order::find(1);
 
-// Check if transitions are allowed
-if ($order->canApprove()) {
-    $order->approve(); // Executes guard + action + state change
+if ($order->inState('pending')) {
+    // Show payment form
+    return view('orders.payment', compact('order'));
 }
 
-// Get current state and available transitions
-$currentState = $order->getCurrentState();
-$availableTransitions = $order->getAvailableTransitions();
-```
-
-</div>
-
-### With History Tracking
-
-<div style="border-left: 5px solid #FF9900; padding-left: 20px; background: rgba(255, 153, 0, 0.1); margin: 15px 0;">
-
-```php
-use Grazulex\LaravelStatecraft\Traits\HasStateHistory;
-
-class Order extends Model
-{
-    use HasStateMachine, HasStateHistory;
-    
-    // ... rest of your model
+if ($order->inState('paid') && $order->canTransition('process')) {
+    // Start processing
+    $order->transition('process');
 }
 
-// Access transition history
+// Get transition history
 $history = $order->stateHistory();
-$lastTransition = $order->latestStateTransition();
-```
-
-</div>
-
----
-
-## <span style="color: #88C600;">⚙️ Custom Guard</span>
-
-<div style="border-left: 5px solid #D2D200; padding-left: 20px; background: rgba(210, 210, 0, 0.1); margin: 15px 0;">
-
-```php
-class IsManager implements \Grazulex\LaravelStatecraft\Contracts\Guard
-{
-    public function check(Model $model, string $from, string $to): bool
-    {
-        return auth()->user()?->is_manager;
-    }
+foreach ($history as $entry) {
+    echo "{$entry->from_state} → {$entry->to_state} at {$entry->created_at}";
 }
 ```
 
-</div>
-
----
-
-## <span style="color: #00B470;">🔍 Custom Action</span>
-
-<div style="border-left: 5px solid #FF9900; padding-left: 20px; background: rgba(255, 153, 0, 0.1); margin: 15px 0;">
+### User Registration Flow
 
 ```php
-class NotifyReviewer implements \Grazulex\LaravelStatecraft\Contracts\Action
+class UserRegistration extends Model
 {
-    public function execute(Model $model, string $from, string $to): void
-    {
-        Notification::route('mail', 'review@team.com')
-            ->notify(new OrderPendingNotification($model));
-    }
+    use HasStateMachine;
+    
+    protected $stateMachine = 'UserRegistrationStateMachine';
 }
+
+// Registration workflow
+$registration = UserRegistration::create(['email' => 'user@example.com']);
+$registration->transition('send_verification'); // pending → email_sent
+$registration->transition('verify_email');     // email_sent → verified  
+$registration->transition('complete');         // verified → completed
 ```
 
-</div>
+Check out the [examples directory](examples) for more examples.
 
----
+## 🧪 Testing
 
-## <span style="color: #D2D200;">📜 Transition History (optional)</span>
-
-<div style="border-left: 5px solid #88C600; padding-left: 20px; background: rgba(136, 198, 0, 0.1); margin: 15px 0;">
-
-```php
-$order->stateHistory(); // → returns a collection of past transitions
-```
-
-</div>
-
----
-
-## <span style="color: #FF9900;">✅ Artisan Commands</span>
-
-### Generate YAML Definition
-
-<div style="border-left: 5px solid #D2D200; padding-left: 20px; background: rgba(210, 210, 0, 0.1); margin: 15px 0;">
-
-```bash
-php artisan statecraft:make order-workflow
-php artisan statecraft:make article-status --states=draft,review,published --initial=draft
-```
-
-</div>
-
-### Generate PHP Classes from YAML
-
-<div style="border-left: 5px solid #88C600; padding-left: 20px; background: rgba(136, 198, 0, 0.1); margin: 15px 0;">
-
-```bash
-php artisan statecraft:generate database/state_machines/order-workflow.yaml
-```
-
-This generates:
-- **<span style="color: #FF9900;">Guard classes</span>** in `app/StateMachines/Guards/`
-- **<span style="color: #D2D200;">Action classes</span>** in `app/StateMachines/Actions/`
-- **<span style="color: #88C600;">Model examples</span>** in `app/StateMachines/`
-
-</div>
-
-### List and Inspect Definitions
-
-<div style="border-left: 5px solid #00B470; padding-left: 20px; background: rgba(0, 180, 112, 0.1); margin: 15px 0;">
-
-```bash
-# List all YAML definitions
-php artisan statecraft:list
-
-# Show definition details
-php artisan statecraft:show order-workflow
-
-# Validate definitions
-php artisan statecraft:validate --all
-```
-
-</div>
-
-### Export to Different Formats
-
-<div style="border-left: 5px solid #FF9900; padding-left: 20px; background: rgba(255, 153, 0, 0.1); margin: 15px 0;">
-
-```bash
-# Export to JSON, Mermaid, or Markdown
-php artisan statecraft:export order-workflow json
-php artisan statecraft:export order-workflow mermaid
-php artisan statecraft:export order-workflow md --output=docs/workflow.md
-```
-
-</div>
-
-### Command Options
-
-**<span style="color: #D2D200;">statecraft:make</span>** supports additional options:
-
-```bash
-php artisan statecraft:make order-workflow --model=App\\Models\\Order --states=draft,pending,approved --initial=draft
-```
-
-**<span style="color: #88C600;">statecraft:generate</span>** uses configurable output paths:
-- Configure output directory via `statecraft.generated_code_path`
-- Defaults to `app/StateMachines/` if not configured
-
----
-
-## <span style="color: #88C600;">🧪 Testing</span>
-
-## <span style="color: #88C600;">🧪 Testing</span>
-
-Use the built-in test utilities:
-
-<div style="border-left: 5px solid #00B470; padding-left: 20px; background: rgba(0, 180, 112, 0.1); margin: 15px 0;">
+Laravel Statecraft includes comprehensive testing utilities:
 
 ```php
 use Grazulex\LaravelStatecraft\Testing\StateMachineTester;
 
-// Test transitions
-StateMachineTester::assertTransitionAllowed($order, 'approved');
-StateMachineTester::assertTransitionBlocked($order, 'rejected');
-
-// Test states
-StateMachineTester::assertInState($order, 'pending');
-StateMachineTester::assertHasAvailableTransitions($order, ['approved', 'rejected']);
-
-// Test methods
-StateMachineTester::assertCanExecuteMethod($order, 'approve');
-StateMachineTester::assertCannotExecuteMethod($order, 'reject');
+public function test_order_payment_flow()
+{
+    $order = Order::factory()->create();
+    
+    // Test state machine flow
+    StateMachineTester::make($order)
+        ->assertCurrentState('pending')
+        ->assertCanTransition('pay')
+        ->assertCannotTransition('ship')
+        ->transition('pay')
+        ->assertCurrentState('paid')
+        ->assertTransitionCount(1);
+}
 ```
 
-</div>
+## 🔧 Requirements
 
-### Testing Guard Expressions
+- PHP: ^8.3
+- Laravel: ^12.0
+- Carbon: ^3.10
 
-<div style="border-left: 5px solid #FF9900; padding-left: 20px; background: rgba(255, 153, 0, 0.1); margin: 15px 0;">
+## 🚀 Performance
 
-Test **<span style="color: #D2D200;">complex guard expressions</span>** by setting up your models and authentication:
+Laravel Statecraft is optimized for performance:
 
-```php
-// Test AND logic with actual conditions
-$manager = User::factory()->create(['is_manager' => true]);
-$order = Order::factory()->create(['amount' => 1000]);
-$this->actingAs($manager);
+- **State Caching**: State machines are cached for better performance
+- **Lazy Loading**: Guards and actions are loaded only when needed
+- **Efficient Queries**: Optimized database queries for state operations
+- **Memory Efficient**: Minimal memory footprint
 
-// Both conditions true: IsManager AND HasMinimumAmount
-StateMachineTester::assertTransitionAllowed($order, 'approved');
-
-// Make one condition false
-$nonManager = User::factory()->create(['is_manager' => false]);
-$this->actingAs($nonManager);
-StateMachineTester::assertTransitionBlocked($order, 'approved');
-
-// Test OR logic with different conditions
-$vipOrder = Order::factory()->create(['is_vip' => true]);
-StateMachineTester::assertTransitionAllowed($vipOrder, 'approved');
-
-// Test NOT logic
-$blacklistedOrder = Order::factory()->create(['customer_blacklisted' => true]);
-StateMachineTester::assertTransitionBlocked($blacklistedOrder, 'approved');
-```
-
-</div>
-
-## <span style="color: #00B470;">🔔 Events</span>
-
-Laravel Statecraft dispatches **<span style="color: #FF9900;">events during transitions</span>**:
-
-<div style="border-left: 5px solid #D2D200; padding-left: 20px; background: rgba(210, 210, 0, 0.1); margin: 15px 0;">
-
-```php
-use Grazulex\LaravelStatecraft\Events\StateTransitioning;
-use Grazulex\LaravelStatecraft\Events\StateTransitioned;
-
-// Listen to state changes
-Event::listen(StateTransitioning::class, function ($event) {
-    // Before transition
-    $event->model; // The model
-    $event->from;  // From state
-    $event->to;    // To state
-    $event->guard; // Guard class (if any)
-    $event->action; // Action class (if any)
-});
-
-Event::listen(StateTransitioned::class, function ($event) {
-    // After transition
-    Log::info("Order {$event->model->id} transitioned from {$event->from} to {$event->to}");
-});
-```
-
-</div>
-
----
-
-## <span style="color: #D2D200;">📚 Documentation</span>
-
-For **<span style="color: #FF9900;">comprehensive documentation</span>**, examples, and **<span style="color: #88C600;">advanced usage</span>**:
-
-<div style="border-left: 5px solid #88C600; padding-left: 20px; background: rgba(136, 198, 0, 0.1); margin: 15px 0;">
-
-### 📖 Getting Started
-- **[Documentation Overview](docs/README.md)** - <span style="color: #FF9900;">Complete documentation index</span>
-- **[Configuration](docs/CONFIGURATION.md)** - <span style="color: #00B470;">Configuration options</span>
-
-### 🎯 Advanced Usage
-- **[Console Commands](docs/CONSOLE_COMMANDS.md)** - <span style="color: #FF9900;">Console commands reference</span>  
-- **[Guards and Actions](docs/GUARDS_AND_ACTIONS.md)** - <span style="color: #D2D200;">Dynamic guards and actions</span>
-- **[Guard Expressions](docs/GUARD_EXPRESSIONS.md)** - <span style="color: #88C600;">AND/OR/NOT logic for guards</span>
-- **[Events](docs/EVENTS.md)** - <span style="color: #FF9900;">Event system usage</span>
-- **[Testing](docs/TESTING.md)** - <span style="color: #D2D200;">Testing utilities</span>
-- **[History](docs/HISTORY.md)** - <span style="color: #88C600;">State transition history</span>
-
-### 💡 Examples
-- **[Examples Overview](examples/README.md)** - <span style="color: #00B470;">Practical examples and use cases</span>
-
-</div>
-
-## <span style="color: #88C600;">🎯 Next Steps</span>
-
-<div style="border-left: 5px solid #00B470; padding-left: 20px; background: rgba(0, 180, 112, 0.1); margin: 15px 0;">
-
-1. **<span style="color: #FF9900;">Quick Start</span>**: Check out the [OrderWorkflow example](examples/OrderWorkflow/)
-2. **<span style="color: #D2D200;">Console Commands</span>**: Explore the [console commands](docs/CONSOLE_COMMANDS.md)
-3. **<span style="color: #88C600;">Guard Expressions</span>**: See [guard-expressions-workflow.yaml](examples/OrderWorkflow/guard-expressions-workflow.yaml) for comprehensive examples
-4. **<span style="color: #00B470;">Advanced Usage</span>**: Read the [Guards and Actions documentation](docs/GUARDS_AND_ACTIONS.md)
-5. **<span style="color: #FF9900;">Configuration</span>**: Review the [Configuration guide](docs/CONFIGURATION.md)
-6. **<span style="color: #D2D200;">Testing</span>**: Learn about [Testing utilities](docs/TESTING.md)
-
-</div>
-
----
-
-## <span style="color: #88C600;">🤝</span> Contributing
+## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-## <span style="color: #FF9900;">🔒</span> Security
+## 🔒 Security
 
 If you discover a security vulnerability, please review our [Security Policy](SECURITY.md) before disclosing it.
 
-## <span style="color: #FF9900;">📄</span> License
+## 📄 License
 
 Laravel Statecraft is open-sourced software licensed under the [MIT license](LICENSE.md).
 
 ---
 
-<div align="center">
-  Made with <span style="color: #FF9900;">❤️</span> for the <span style="color: #88C600;">Laravel</span> community
-</div>
+**Made with ❤️ for the Laravel community**
+
+### Resources
+
+- [📖 Documentation](docs/README.md)
+- [💬 Discussions](https://github.com/Grazulex/laravel-statecraft/discussions)
+- [🐛 Issue Tracker](https://github.com/Grazulex/laravel-statecraft/issues)
+- [📦 Packagist](https://packagist.org/packages/grazulex/laravel-statecraft)
+
+### Community Links
+
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - Our code of conduct
+- [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
+- [SECURITY.md](SECURITY.md) - Security policy
+- [RELEASES.md](RELEASES.md) - Release notes and changelog
