@@ -27,7 +27,7 @@ state_machine:
 ```
 
 ### 📄 `order.yaml`
-Example of an order workflow with guards and actions.
+Example of an order workflow with guards, actions, and guard expressions.
 
 ```yaml
 state_machine:
@@ -43,16 +43,21 @@ state_machine:
     - from: draft
       to: pending
       guard: CanSubmit
+      action: NotifyReviewer
     - from: pending
       to: approved
       guard:
         and:
           - IsManager
           - HasMinimumAmount
+          - not: IsBlacklisted
       action: SendApprovalEmail
     - from: pending
       to: rejected
-      guard: IsManager
+      guard:
+        or:
+          - IsManager
+          - IsAuthor
       action: SendRejectionEmail
 ```
 
@@ -121,8 +126,19 @@ php artisan statecraft:show order --path=examples
 # Validate example
 php artisan statecraft:validate order --path=examples
 
-# Export example
+# Validate all examples
+php artisan statecraft:validate --all --path=examples
+
+# Export example to different formats
 php artisan statecraft:export order json --path=examples
+php artisan statecraft:export order mermaid --path=examples
+php artisan statecraft:export order md --output=docs/order-workflow.md --path=examples
+
+# Generate new YAML definition
+php artisan statecraft:make my-workflow --states=draft,pending,approved --initial=draft
+
+# Generate PHP classes from YAML
+php artisan statecraft:generate examples/order.yaml
 ```
 
 ## More Complete Examples
