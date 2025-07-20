@@ -10,7 +10,6 @@
   [![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://php.net)
   [![Laravel Version](https://img.shields.io/badge/laravel-%5E12.19-red)](https://laravel.com)
   [![Tests](https://github.com/Grazulex/laravel-statecraft/workflows/Tests/badge.svg)](https://github.com/Grazulex/laravel-statecraft/actions)
-  [![Code Quality](https://github.com/Grazulex/laravel-statecraft/workflows/Code%20Quality/badge.svg)](https://github.com/Grazulex/laravel-statecraft/actions)
   [![Code Style](https://img.shields.io/badge/code%20style-pint-orange)](https://github.com/laravel/pint)
 </div>
 
@@ -25,6 +24,24 @@
 🔧 **Flexibilité** : Guards complexes, actions personnalisées, historique des transitions
 
 </div>
+
+## Table of Contents
+
+- [🚀 Features](#-features)
+- [📦 Installation](#-installation)
+- [✨ Example: Order Workflow](#-example-order-workflow)
+- [🧩 Guard Expressions](#-guard-expressions)
+- [⚙️ Custom Guard](#-custom-guard)
+- [🔍 Custom Action](#-custom-action)
+- [📜 Transition History](#-transition-history-optional)
+- [✅ Artisan Commands](#-artisan-commands)
+- [🧪 Testing](#-testing)
+- [🔔 Events](#-events)
+- [📚 Documentation](#-documentation)
+- [🎯 Next Steps](#-next-steps)
+- [🤝 Contributing](#-contributing)
+- [🔒 Security](#-security)
+- [📄 License](#-license)
 
 ## <span style="color: #FF9900;">🚀 Features</span>
 
@@ -444,14 +461,20 @@ For **<span style="color: #FF9900;">comprehensive documentation</span>**, exampl
 
 <div style="border-left: 5px solid #88C600; padding-left: 20px; background: rgba(136, 198, 0, 0.1); margin: 15px 0;">
 
+### 📖 Getting Started
+- **[Documentation Overview](docs/README.md)** - <span style="color: #FF9900;">Complete documentation index</span>
+- **[Configuration](docs/CONFIGURATION.md)** - <span style="color: #00B470;">Configuration options</span>
+
+### 🎯 Advanced Usage
 - **[Console Commands](docs/CONSOLE_COMMANDS.md)** - <span style="color: #FF9900;">Console commands reference</span>  
 - **[Guards and Actions](docs/GUARDS_AND_ACTIONS.md)** - <span style="color: #D2D200;">Dynamic guards and actions</span>
 - **[Guard Expressions](docs/GUARD_EXPRESSIONS.md)** - <span style="color: #88C600;">AND/OR/NOT logic for guards</span>
-- **[Configuration](docs/CONFIGURATION.md)** - <span style="color: #00B470;">Configuration options</span>
 - **[Events](docs/EVENTS.md)** - <span style="color: #FF9900;">Event system usage</span>
 - **[Testing](docs/TESTING.md)** - <span style="color: #D2D200;">Testing utilities</span>
 - **[History](docs/HISTORY.md)** - <span style="color: #88C600;">State transition history</span>
-- **[Examples](examples/)** - <span style="color: #00B470;">Practical examples and use cases</span>
+
+### 💡 Examples
+- **[Examples Overview](examples/README.md)** - <span style="color: #00B470;">Practical examples and use cases</span>
 
 </div>
 
@@ -470,24 +493,20 @@ For **<span style="color: #FF9900;">comprehensive documentation</span>**, exampl
 
 ---
 
-## <span style="color: #FF9900;">❤️ About</span>
+## <span style="color: #88C600;">🤝</span> Contributing
 
-<div style="border-left: 5px solid #D2D200; padding-left: 20px; background: rgba(210, 210, 0, 0.1); margin: 15px 0;">
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-Laravel-Statecraft is part of the **<span style="color: #88C600;">Grazulex Tools</span>** ecosystem:  
-`Laravel-Arc` (DTOs) • `Laravel-Flowpipe` (Business Steps) • `Laravel-Statecraft` (State Machines)
+## <span style="color: #FF9900;">🔒</span> Security
 
-> Designed for **<span style="color: #00B470;">clean, testable, and modular</span>** Laravel applications.
+If you discover a security vulnerability, please review our [Security Policy](SECURITY.md) before disclosing it.
 
-</div>
+## <span style="color: #FF9900;">📄</span> License
+
+Laravel Statecraft is open-sourced software licensed under the [MIT license](LICENSE.md).
 
 ---
 
-## <span style="color: #00B470;">🧙 Author</span>
-
-<div style="border-left: 5px solid #FF9900; padding-left: 20px; background: rgba(255, 153, 0, 0.1); margin: 15px 0;">
-
-**<span style="color: #D2D200;">Jean‑Marc Strauven</span>** / [@Grazulex](https://github.com/Grazulex)  
-Blog: **<span style="color: #88C600;">[Open Source My Friend](https://opensourcemyfriend.hashnode.dev)</span>**
-
+<div align="center">
+  Made with <span style="color: #FF9900;">❤️</span> for the <span style="color: #88C600;">Laravel</span> community
 </div>
