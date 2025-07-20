@@ -68,7 +68,9 @@ class GenerateCommand extends Command
 
         foreach ($guards as $guard) {
             $className = class_basename($guard);
-            $namespace = Str::beforeLast($guard, '\\');
+
+            // Si le guard n'a pas de namespace, utiliser le namespace par défaut
+            $namespace = str_contains($guard, '\\') ? Str::beforeLast($guard, '\\') : 'App\\StateMachines\\Guards';
 
             $content = $this->generateFromStub('guard', [
                 'className' => $className,
@@ -96,7 +98,13 @@ class GenerateCommand extends Command
 
         foreach ($actions as $action) {
             $className = class_basename($action);
-            $namespace = Str::beforeLast($action, '\\');
+
+            // Si l'action n'a pas de namespace, utiliser le namespace par défaut
+            if (str_contains($action, '\\')) {
+                $namespace = Str::beforeLast($action, '\\');
+            } else {
+                $namespace = 'App\\StateMachines\\Actions';
+            }
 
             $content = $this->generateFromStub('action', [
                 'className' => $className,

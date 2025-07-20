@@ -57,6 +57,28 @@ trait HasStateMachine
     }
 
     /**
+     * Check if the model can transition to a specific state.
+     */
+    public function canTransitionTo(string $state): bool
+    {
+        return $this->getStateMachineManager()->canTransition($this, $state);
+    }
+
+    /**
+     * Transition the model to a specific state.
+     */
+    public function transition(string $state): bool
+    {
+        if ($this->canTransitionTo($state)) {
+            $this->getStateMachineManager()->transition($this, $state);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Initialize the model with the initial state.
      */
     public function initializeState(): void
