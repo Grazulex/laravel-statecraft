@@ -284,11 +284,11 @@ return [
 
 For detailed documentation, examples, and advanced usage:
 
-- 📚 [Full Documentation](docs/README.md)
-- 🎯 [Examples](examples/README.md)
-- 🔧 [Configuration](docs/configuration.md)
-- 🧪 [Testing](docs/testing.md)
-- 🎨 [Guards & Actions](docs/guards-actions.md)
+- 📚 [Full Documentation](https://github.com/Grazulex/laravel-statecraft/wiki)
+- 🎯 [Examples](https://github.com/Grazulex/laravel-statecraft/wiki/Examples)
+- 🔧 [Configuration](https://github.com/Grazulex/laravel-statecraft/wiki/Configuration)
+- 🧪 [Testing](https://github.com/Grazulex/laravel-statecraft/wiki/Testing)
+- 🎨 [Guards & Actions](https://github.com/Grazulex/laravel-statecraft/wiki/Guards-and-Actions)
 
 ## 💡 Examples
 
@@ -332,7 +332,7 @@ $registration->transition('verify_email');     // email_sent → verified
 $registration->transition('complete');         // verified → completed
 ```
 
-Check out the [examples directory](examples) for more examples.
+Check out the [wiki](https://github.com/Grazulex/laravel-statecraft/wiki/Examples) for more examples.
 
 ## 🧪 Testing
 
@@ -389,7 +389,7 @@ Laravel Statecraft is open-sourced software licensed under the [MIT license](LIC
 
 ### Resources
 
-- [📖 Documentation](docs/README.md)
+- [📖 Documentation](https://github.com/Grazulex/laravel-statecraft/wiki)
 - [💬 Discussions](https://github.com/Grazulex/laravel-statecraft/discussions)
 - [🐛 Issue Tracker](https://github.com/Grazulex/laravel-statecraft/issues)
 - [📦 Packagist](https://packagist.org/packages/grazulex/laravel-statecraft)
