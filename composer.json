@@ -65,7 +65,8 @@
         "issues": "https://github.com/Grazulex/laravel-statecraft/issues",
         "source": "https://github.com/Grazulex/laravel-statecraft",
         "forum": "https://github.com/Grazulex/laravel-statecraft/discussions",
-        "docs": "https://github.com/Grazulex/laravel-statecraft#readme"
+        "wiki": "https://github.com/Grazulex/laravel-statecraft/wiki",
+        "docs": "https://github.com/Grazulex/laravel-statecraft/wiki"
     },
     "scripts": {
         "test": [
