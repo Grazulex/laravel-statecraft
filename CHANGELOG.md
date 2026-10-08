@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.0] - 2026-10-08
+
+### Changed
+
+- **Minimum PHP version is now 8.4**: PHP 8.3 is no longer supported (#54)
+- CI test matrix now runs PHP 8.4 and 8.5 (#54)
+
 ## [v1.4.0] - 2026-09-17
 
 ### Added
@@ -26,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Last release supporting Laravel 12 only. See the [GitHub releases](https://github.com/Grazulex/laravel-statecraft/releases) for earlier history.
 
-[Unreleased]: https://github.com/Grazulex/laravel-statecraft/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/Grazulex/laravel-statecraft/compare/v1.5.0...HEAD
+[v1.5.0]: https://github.com/Grazulex/laravel-statecraft/compare/v1.4.0...v1.5.0
 [v1.4.0]: https://github.com/Grazulex/laravel-statecraft/compare/v1.3.0...v1.4.0
 [v1.3.0]: https://github.com/Grazulex/laravel-statecraft/releases/tag/v1.3.0
