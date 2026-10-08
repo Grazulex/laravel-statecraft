@@ -182,7 +182,7 @@ Explore real-world implementations and patterns:
 
 ## 🔧 Requirements
 
-- PHP 8.3 or higher
+- PHP 8.4 or higher
 - Laravel 12.x or 13.x
 - Optional: Redis for caching (recommended for production)
 
