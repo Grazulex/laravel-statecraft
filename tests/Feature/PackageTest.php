@@ -24,7 +24,7 @@ it('requires correct PHP version', function () {
     $composer = json_decode(file_get_contents(__DIR__.'/../../composer.json'), true);
 
     expect($composer['require']['php'])
-        ->toBe('^8.3');
+        ->toBe('^8.4');
 });
 
 it('has Laravel dependencies', function () {
