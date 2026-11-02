@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.1] - 2026-11-02
+
+### Changed
+
+- Dev dependencies updated: Pint `^1.32`, Pest `^3.8|^4.7`, Pest Laravel plugin `^3.2|^4.1`, Larastan `^3.13`, Rector `^2.8`, `doctrine/dbal` `^4.5`.
+- `symfony/yaml` now accepts `^7.4|^8.1`.
+
+### Fixed
+
+- Rector config no longer uses the removed `strictBooleans` option (Rector 2.8).
+
 ## [v1.5.0] - 2026-10-08
 
 ### Changed
