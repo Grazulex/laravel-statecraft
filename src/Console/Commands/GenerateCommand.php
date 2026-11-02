@@ -51,7 +51,7 @@ class GenerateCommand extends Command
     private function generateGuards(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition, string $outputDir): void
     {
         $guards = collect($definition->getTransitions())
-            ->map(function ($transition): string|array|null {
+            ->map(function (array $transition): string|array|null {
                 $guard = $transition['guard'] ?? null;
                 if (is_string($guard)) {
                     return $guard;
@@ -90,7 +90,7 @@ class GenerateCommand extends Command
     private function generateActions(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition, string $outputDir): void
     {
         $actions = collect($definition->getTransitions())
-            ->map(function ($transition) {
+            ->map(function (array $transition) {
                 return $transition['action'] ?? null;
             })
             ->filter()
