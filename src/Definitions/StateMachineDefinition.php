@@ -71,7 +71,7 @@ final class StateMachineDefinition
      */
     public function getTransitionsFrom(string $state): array
     {
-        return array_filter($this->transitions, fn ($transition): bool => $transition['from'] === $state);
+        return array_filter($this->transitions, fn (array $transition): bool => $transition['from'] === $state);
     }
 
     /**
