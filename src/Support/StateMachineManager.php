@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Grazulex\LaravelStatecraft\Support;
 
 use Grazulex\LaravelStatecraft\Contracts\Action;
+use Grazulex\LaravelStatecraft\Contracts\ContextAwareAction;
+use Grazulex\LaravelStatecraft\Contracts\ContextAwareGuard;
 use Grazulex\LaravelStatecraft\Contracts\Guard;
 use Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition;
 use Grazulex\LaravelStatecraft\Events\StateTransitioned;
@@ -24,8 +26,10 @@ final class StateMachineManager
 
     /**
      * Check if a transition is allowed.
+     *
+     * @param  array<string, mixed>  $context  Context passed to context-aware guards
      */
-    public function canTransition(Model $model, string $to): bool
+    public function canTransition(Model $model, string $to, array $context = []): bool
     {
         $currentState = $this->getCurrentState($model);
 
@@ -36,15 +40,19 @@ final class StateMachineManager
         $transition = $this->definition->getTransition($currentState, $to);
 
         if ($transition['guard']) {
-            // Si c'est une expression de guard (array), utiliser le parser
+            // Guard expressions (and/or/not) are evaluated by the parser
             if (GuardExpressionParser::isExpression($transition['guard'])) {
                 $guardFunction = GuardExpressionParser::parse($transition['guard'], $currentState, $to);
 
-                return $guardFunction($model);
+                return $guardFunction($model, $context);
             }
 
-            // Sinon, utiliser la logique classique
+            // Otherwise, resolve a single guard class
             $guard = $this->resolveGuard($transition['guard']);
+
+            if ($guard instanceof ContextAwareGuard) {
+                return $guard->check($model, $currentState, $to, $context);
+            }
 
             return $guard->check($model, $currentState, $to);
         }
@@ -54,12 +62,15 @@ final class StateMachineManager
 
     /**
      * Execute a transition.
+     *
+     * @param  array<string, mixed>  $context  Context (reason, actor, payload...) passed to
+     *                                         context-aware guards and actions, events and history
      */
-    public function transition(Model $model, string $to): void
+    public function transition(Model $model, string $to, array $context = []): void
     {
         $currentState = $this->getCurrentState($model);
 
-        if (! $this->canTransition($model, $to)) {
+        if (! $this->canTransition($model, $to, $context)) {
             throw new InvalidTransitionException("Transition from {$currentState} to {$to} is not allowed");
         }
 
@@ -68,13 +79,18 @@ final class StateMachineManager
         // Fire transitioning event
         if (config('statecraft.events.enabled', true)) {
             $guardForEvent = is_array($transition['guard']) ? json_encode($transition['guard']) : $transition['guard'];
-            Event::dispatch(new StateTransitioning($model, $currentState, $to, $guardForEvent, $transition['action']));
+            Event::dispatch(new StateTransitioning($model, $currentState, $to, $guardForEvent, $transition['action'], $context));
         }
 
         // Execute action if defined
         if ($transition['action']) {
             $action = $this->resolveAction($transition['action']);
-            $action->execute($model, $currentState, $to);
+
+            if ($action instanceof ContextAwareAction) {
+                $action->execute($model, $currentState, $to, $context);
+            } else {
+                $action->execute($model, $currentState, $to);
+            }
         }
 
         // Update the model state
@@ -84,13 +100,13 @@ final class StateMachineManager
         // Record state transition history
         if (method_exists($model, 'recordStateTransition')) {
             $guardForHistory = is_array($transition['guard']) ? json_encode($transition['guard']) : $transition['guard'];
-            $model->recordStateTransition($currentState, $to, $guardForHistory, $transition['action']);
+            $model->recordStateTransition($currentState, $to, $guardForHistory, $transition['action'], $context);
         }
 
         // Fire transitioned event
         if (config('statecraft.events.enabled', true)) {
             $guardForEvent = is_array($transition['guard']) ? json_encode($transition['guard']) : $transition['guard'];
-            Event::dispatch(new StateTransitioned($model, $currentState, $to, $guardForEvent, $transition['action']));
+            Event::dispatch(new StateTransitioned($model, $currentState, $to, $guardForEvent, $transition['action'], $context));
         }
     }
 
@@ -104,8 +120,10 @@ final class StateMachineManager
 
     /**
      * Get available transitions from current state.
+     *
+     * @param  array<string, mixed>  $context  Context passed to context-aware guards
      */
-    public function getAvailableTransitions(Model $model): array
+    public function getAvailableTransitions(Model $model, array $context = []): array
     {
         $currentState = $this->getCurrentState($model);
         $transitions = $this->definition->getTransitionsFrom($currentState);
@@ -113,7 +131,7 @@ final class StateMachineManager
         $available = [];
 
         foreach ($transitions as $transition) {
-            if ($this->canTransition($model, $transition['to'])) {
+            if ($this->canTransition($model, $transition['to'], $context)) {
                 $available[] = $transition;
             }
         }

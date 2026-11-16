@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Grazulex\LaravelStatecraft\Support;
 
+use Grazulex\LaravelStatecraft\Contracts\ContextAwareGuard;
 use Grazulex\LaravelStatecraft\Guards\GuardExpression;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
@@ -12,17 +13,21 @@ class GuardExpressionParser
 {
     public static function parse($guard, string $from, string $to): callable
     {
-        return function (Model $model) use ($guard, $from, $to) {
+        return function (Model $model, array $context = []) use ($guard, $from, $to) {
             // Si c'est une string simple, c'est un guard classique
             if (is_string($guard)) {
                 $guardInstance = app($guard);
+
+                if ($guardInstance instanceof ContextAwareGuard) {
+                    return $guardInstance->check($model, $from, $to, $context);
+                }
 
                 return $guardInstance->check($model, $from, $to);
             }
 
             // Si c'est un array, c'est une expression
             if (is_array($guard)) {
-                $expression = new GuardExpression($guard, $from, $to);
+                $expression = new GuardExpression($guard, $from, $to, $context);
 
                 return $expression->evaluate($model);
             }
