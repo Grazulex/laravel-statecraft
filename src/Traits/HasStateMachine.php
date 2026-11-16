@@ -19,19 +19,22 @@ trait HasStateMachine
     {
         $manager = $this->getStateMachineManager();
 
+        // Optional transition context given as first argument (e.g. $order->approve(['reason' => '...']))
+        $context = isset($parameters[0]) && is_array($parameters[0]) ? $parameters[0] : [];
+
         // Handle canTransitionTo methods (e.g., canApprove, canReject)
         if (str_starts_with($method, 'can')) {
             $state = $this->methodToState(mb_substr($method, 3));
 
-            return $manager->canTransition($this, $state);
+            return $manager->canTransition($this, $state, $context);
         }
 
         // Handle transition methods (e.g., approve, reject, publish)
         $state = $this->methodToState($method);
 
         // Check if this is a valid transition
-        if ($manager->canTransition($this, $state)) {
-            $manager->transition($this, $state);
+        if ($manager->canTransition($this, $state, $context)) {
+            $manager->transition($this, $state, $context);
 
             return $this;
         }
@@ -50,27 +53,34 @@ trait HasStateMachine
 
     /**
      * Get available transitions from the current state.
+     *
+     * @param  array<string, mixed>  $context  Context passed to context-aware guards
      */
-    public function getAvailableTransitions(): array
+    public function getAvailableTransitions(array $context = []): array
     {
-        return $this->getStateMachineManager()->getAvailableTransitions($this);
+        return $this->getStateMachineManager()->getAvailableTransitions($this, $context);
     }
 
     /**
      * Check if the model can transition to a specific state.
+     *
+     * @param  array<string, mixed>  $context  Context passed to context-aware guards
      */
-    public function canTransitionTo(string $state): bool
+    public function canTransitionTo(string $state, array $context = []): bool
     {
-        return $this->getStateMachineManager()->canTransition($this, $state);
+        return $this->getStateMachineManager()->canTransition($this, $state, $context);
     }
 
     /**
      * Transition the model to a specific state.
+     *
+     * @param  array<string, mixed>  $context  Context (reason, actor, payload...) passed to
+     *                                         context-aware guards and actions, events and history
      */
-    public function transition(string $state): bool
+    public function transition(string $state, array $context = []): bool
     {
-        if ($this->canTransitionTo($state)) {
-            $this->getStateMachineManager()->transition($this, $state);
+        if ($this->canTransitionTo($state, $context)) {
+            $this->getStateMachineManager()->transition($this, $state, $context);
 
             return true;
         }

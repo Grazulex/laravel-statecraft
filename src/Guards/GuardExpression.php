@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Grazulex\LaravelStatecraft\Guards;
 
+use Grazulex\LaravelStatecraft\Contracts\ContextAwareGuard;
 use Grazulex\LaravelStatecraft\Contracts\Guard;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
@@ -16,11 +17,20 @@ class GuardExpression
 
     protected string $to;
 
-    public function __construct(array $expression, string $from, string $to)
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $context;
+
+    /**
+     * @param  array<string, mixed>  $context  Context passed to context-aware guards
+     */
+    public function __construct(array $expression, string $from, string $to, array $context = [])
     {
         $this->expression = $expression;
         $this->from = $from;
         $this->to = $to;
+        $this->context = $context;
     }
 
     public function evaluate(Model $model): bool
@@ -110,6 +120,10 @@ class GuardExpression
 
             if (! $guardInstance instanceof Guard) {
                 throw new InvalidArgumentException("Guard {$guardClass} must implement Guard interface");
+            }
+
+            if ($guardInstance instanceof ContextAwareGuard) {
+                return $guardInstance->check($model, $this->from, $this->to, $this->context);
             }
 
             return $guardInstance->check($model, $this->from, $this->to);

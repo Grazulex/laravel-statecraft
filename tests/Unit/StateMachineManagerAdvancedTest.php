@@ -257,7 +257,7 @@ describe('StateMachineManager - Advanced Tests', function () {
         $order->shouldReceive('save');
         $order->shouldReceive('recordStateTransition')
             ->once()
-            ->with('pending', 'approved', null, null);
+            ->with('pending', 'approved', null, null, []);
 
         $this->manager->transition($order, 'approved');
     });

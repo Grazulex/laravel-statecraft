@@ -23,12 +23,23 @@ final class StateTransitioned
 
     public ?string $action;
 
-    public function __construct(Model $model, string $from, string $to, ?string $guard = null, ?string $action = null)
+    /**
+     * Context passed to the transition (reason, actor, payload...).
+     *
+     * @var array<string, mixed>
+     */
+    public array $context;
+
+    /**
+     * @param  array<string, mixed>  $context
+     */
+    public function __construct(Model $model, string $from, string $to, ?string $guard = null, ?string $action = null, array $context = [])
     {
         $this->model = $model;
         $this->from = $from;
         $this->to = $to;
         $this->guard = $guard;
         $this->action = $action;
+        $this->context = $context;
     }
 }
