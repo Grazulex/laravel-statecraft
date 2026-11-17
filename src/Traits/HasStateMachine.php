@@ -72,6 +72,19 @@ trait HasStateMachine
     }
 
     /**
+     * Explain why the model cannot transition to a specific state.
+     *
+     * Returns null when the transition is allowed, otherwise the reason it is
+     * refused (current state not allowing it, failing guard or guard expression).
+     *
+     * @param  array<string, mixed>  $context  Context passed to context-aware guards
+     */
+    public function explainTransition(string $state, array $context = []): ?string
+    {
+        return $this->getStateMachineManager()->explainTransition($this, $state, $context);
+    }
+
+    /**
      * Transition the model to a specific state.
      *
      * @param  array<string, mixed>  $context  Context (reason, actor, payload...) passed to
