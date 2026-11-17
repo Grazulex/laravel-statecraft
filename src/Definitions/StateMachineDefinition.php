@@ -20,13 +20,22 @@ final class StateMachineDefinition
 
     private string $field;
 
+    /**
+     * @var array<int, string>
+     */
+    private array $finalStates;
+
+    /**
+     * @param  array<int, string>  $finalStates  States explicitly declared as final (terminal)
+     */
     public function __construct(
         string $name,
         string $model,
         array $states,
         string $initial,
         array $transitions = [],
-        string $field = 'state'
+        string $field = 'state',
+        array $finalStates = []
     ) {
         $this->name = $name;
         $this->model = $model;
@@ -34,6 +43,7 @@ final class StateMachineDefinition
         $this->initial = $initial;
         $this->transitions = $this->parseTransitions($transitions);
         $this->field = $field;
+        $this->finalStates = array_values($finalStates);
     }
 
     public function getName(): string
@@ -64,6 +74,16 @@ final class StateMachineDefinition
     public function getField(): string
     {
         return $this->field;
+    }
+
+    /**
+     * Get the states explicitly declared as final (terminal).
+     *
+     * @return array<int, string>
+     */
+    public function getFinalStates(): array
+    {
+        return $this->finalStates;
     }
 
     /**

@@ -31,33 +31,62 @@ final class StateMachineManager
      */
     public function canTransition(Model $model, string $to, array $context = []): bool
     {
+        return $this->explainTransition($model, $to, $context) === null;
+    }
+
+    /**
+     * Explain why a transition is refused.
+     *
+     * Returns null when the transition is allowed, otherwise a human-readable
+     * reason: the current state does not allow it, or a guard (named) or a
+     * guard expression refused it.
+     *
+     * @param  array<string, mixed>  $context  Context passed to context-aware guards
+     */
+    public function explainTransition(Model $model, string $to, array $context = []): ?string
+    {
         $currentState = $this->getCurrentState($model);
 
         if (! $this->definition->isTransitionValid($currentState, $to)) {
-            return false;
+            if (! $this->definition->isStateValid($to)) {
+                return "State '{$to}' is not defined in the state machine.";
+            }
+
+            return "No transition is defined from the current state '{$currentState}' to '{$to}'.";
         }
 
         $transition = $this->definition->getTransition($currentState, $to);
+        $guardDefinition = $transition['guard'] ?? null;
 
-        if ($transition['guard']) {
-            // Guard expressions (and/or/not) are evaluated by the parser
-            if (GuardExpressionParser::isExpression($transition['guard'])) {
-                $guardFunction = GuardExpressionParser::parse($transition['guard'], $currentState, $to);
-
-                return $guardFunction($model, $context);
-            }
-
-            // Otherwise, resolve a single guard class
-            $guard = $this->resolveGuard($transition['guard']);
-
-            if ($guard instanceof ContextAwareGuard) {
-                return $guard->check($model, $currentState, $to, $context);
-            }
-
-            return $guard->check($model, $currentState, $to);
+        if (! $guardDefinition) {
+            return null;
         }
 
-        return true;
+        // Guard expressions (and/or/not) are evaluated by the parser
+        if (GuardExpressionParser::isExpression($guardDefinition)) {
+            $guardFunction = GuardExpressionParser::parse($guardDefinition, $currentState, $to);
+
+            if ($guardFunction($model, $context)) {
+                return null;
+            }
+
+            $expression = json_encode($guardDefinition, JSON_UNESCAPED_SLASHES);
+
+            return "Guard expression {$expression} refused the transition from '{$currentState}' to '{$to}'.";
+        }
+
+        // Otherwise, resolve a single guard class
+        $guard = $this->resolveGuard($guardDefinition);
+
+        $allowed = $guard instanceof ContextAwareGuard
+            ? $guard->check($model, $currentState, $to, $context)
+            : $guard->check($model, $currentState, $to);
+
+        if ($allowed) {
+            return null;
+        }
+
+        return "Guard '{$guardDefinition}' refused the transition from '{$currentState}' to '{$to}'.";
     }
 
     /**
