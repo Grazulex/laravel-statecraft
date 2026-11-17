@@ -148,6 +148,9 @@ class ValidateCommand extends Command
             // Validate business logic
             $errors = array_merge($errors, $this->validateBusinessLogic($definition));
 
+            // Validate final states, sink states and paths to a final state
+            $errors = array_merge($errors, $this->validateTerminalStates($definition));
+
             // Validate references
             $errors = array_merge($errors, $this->validateReferences($definition));
 
@@ -262,24 +265,147 @@ class ValidateCommand extends Command
             $errors[] = "Model class '{$modelClass}' does not exist";
         }
 
-        // Validate guards and actions (check if they look like valid class names)
+        // Validate guards and actions: class name format, then class existence
         foreach ($definition->getTransitions() as $index => $transition) {
             if (isset($transition['guard'])) {
-                $guard = $transition['guard'];
-                if (is_string($guard) && ! $this->isValidClassName($guard)) {
-                    $errors[] = "Transition #{$index}: Guard '{$guard}' does not look like a valid class name";
+                foreach ($this->extractGuardClasses($transition['guard']) as $guard) {
+                    if (! $this->isValidClassName($guard)) {
+                        $errors[] = "Transition #{$index}: Guard '{$guard}' does not look like a valid class name";
+                    } elseif (! $this->classIsResolvable($guard, 'App\\StateMachines\\Guards\\')) {
+                        $errors[] = "Transition #{$index}: Guard class '{$guard}' does not exist";
+                    }
                 }
             }
 
             if (isset($transition['action'])) {
                 $action = $transition['action'];
-                if (! $this->isValidClassName($action)) {
-                    $errors[] = "Transition #{$index}: Action '{$action}' does not look like a valid class name";
+                if (! is_string($action) || ! $this->isValidClassName($action)) {
+                    $label = is_string($action) ? $action : (string) json_encode($action);
+                    $errors[] = "Transition #{$index}: Action '{$label}' does not look like a valid class name";
+                } elseif (! $this->classIsResolvable($action, 'App\\StateMachines\\Actions\\')) {
+                    $errors[] = "Transition #{$index}: Action class '{$action}' does not exist";
                 }
             }
         }
 
         return $errors;
+    }
+
+    /**
+     * Validate final states, flag sink states and states with no path to a final state.
+     *
+     * Final states are the ones listed under the optional `final` key. When that key
+     * is absent, every state without outgoing transitions is considered final.
+     */
+    private function validateTerminalStates(\Grazulex\LaravelStatecraft\Definitions\StateMachineDefinition $definition): array
+    {
+        $errors = [];
+        $states = array_map(strval(...), $definition->getStates());
+        $declaredFinals = array_map(strval(...), $definition->getFinalStates());
+
+        foreach ($declaredFinals as $final) {
+            if (! in_array($final, $states, true)) {
+                $errors[] = "Final state '{$final}' is not defined in states";
+            }
+        }
+
+        // Build outgoing and incoming adjacency lists
+        $outgoing = array_fill_keys($states, []);
+        $incoming = array_fill_keys($states, []);
+        foreach ($definition->getTransitions() as $transition) {
+            $from = (string) $transition['from'];
+            $to = (string) $transition['to'];
+            if (! isset($outgoing[$from], $incoming[$to])) {
+                continue;
+            }
+            $outgoing[$from][] = $to;
+            $incoming[$to][] = $from;
+        }
+
+        if ($declaredFinals !== []) {
+            $finals = array_values(array_intersect($states, $declaredFinals));
+        } else {
+            $finals = array_values(array_filter($states, fn (string $state): bool => $outgoing[$state] === []));
+        }
+
+        // Sink states: no outgoing transitions while not declared as final
+        $sinks = [];
+        if ($declaredFinals !== []) {
+            foreach ($states as $state) {
+                if ($outgoing[$state] === [] && ! in_array($state, $finals, true)) {
+                    $sinks[] = $state;
+                    $errors[] = "State '{$state}' is a sink state: it has no outgoing transitions and is not declared as final";
+                }
+            }
+        }
+
+        // A machine without any final state is purely cyclic by design: skip the path check
+        if ($finals === []) {
+            return $errors;
+        }
+
+        // Walk transitions backwards from the final states
+        $canReachFinal = array_fill_keys($finals, true);
+        $queue = $finals;
+        while ($queue !== []) {
+            $current = array_shift($queue);
+            foreach ($incoming[$current] as $previous) {
+                if (! isset($canReachFinal[$previous])) {
+                    $canReachFinal[$previous] = true;
+                    $queue[] = $previous;
+                }
+            }
+        }
+
+        foreach ($states as $state) {
+            if (! isset($canReachFinal[$state]) && ! in_array($state, $sinks, true)) {
+                $errors[] = "State '{$state}' has no path to a final state";
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Extract every guard class name from a guard definition (string or and/or/not expression).
+     *
+     * @return array<int, string>
+     */
+    private function extractGuardClasses(mixed $guard): array
+    {
+        if (is_string($guard)) {
+            return [$guard];
+        }
+
+        if (! is_array($guard)) {
+            return [];
+        }
+
+        $classes = [];
+        foreach ($guard as $value) {
+            $classes = array_merge($classes, $this->extractGuardClasses($value));
+        }
+
+        return $classes;
+    }
+
+    /**
+     * Check that a class exists or is bound in the container, falling back to the
+     * default namespace for short class names (same resolution as at runtime).
+     */
+    private function classIsResolvable(string $className, string $defaultNamespace): bool
+    {
+        if (class_exists($className) || app()->bound($className)) {
+            return true;
+        }
+
+        if (! str_contains($className, '\\')) {
+            $fallback = $defaultNamespace.$className;
+
+            return class_exists($fallback) || app()->bound($fallback);
+        }
+
+        return false;
     }
 
     private function isValidClassName(string $className): bool

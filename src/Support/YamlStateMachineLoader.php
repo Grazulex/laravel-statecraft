@@ -61,7 +61,8 @@ final class YamlStateMachineLoader
             states: $stateMachine['states'],
             initial: $stateMachine['initial'],
             transitions: $stateMachine['transitions'] ?? [],
-            field: $stateMachine['field'] ?? 'state'
+            field: $stateMachine['field'] ?? 'state',
+            finalStates: (array) ($stateMachine['final'] ?? [])
         );
     }
 
